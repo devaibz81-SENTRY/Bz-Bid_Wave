@@ -147,7 +147,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   Center(
                     child: Text(
-                      'BELMOPAN • BELIZE CITY • SAN PEDRO',
+                      'COROZAL • ORANGE WALK • BELIZE • CAYO • STANN CREEK • TOLEDO • BELMOPAN',
                       style: GoogleFonts.syne(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white24),
                     ),
                   ),
