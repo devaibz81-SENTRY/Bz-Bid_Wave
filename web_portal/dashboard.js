@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // State
     let currentFilter = 'all';
     let currentCategory = 'all';
+    let currentDistrict = 'all';
     let isBigScreen = false;
     let favorites = new Set();
 
@@ -22,14 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Mock Data
     const mockListings = [
-        { id: '1', title: 'Luxury Timepiece Collection', bid: 4350, category: 'luxury', hot: true, time: 720, img: '⌚', location: 'Belize City', comments: 3 },
-        { id: '2', title: 'Signed Fender Stratocaster', bid: 1750, category: 'art', hot: true, time: 1800, img: '🎸', location: 'San Ignacio', comments: 12 },
-        { id: '3', title: 'Belizean Art Print 2024', bid: 680, category: 'art', hot: false, time: 3600, img: '🖼️', location: 'Placencia', comments: 1 },
+        { id: '1', title: 'Luxury Timepiece Collection', bid: 4350, category: 'luxury', hot: true, time: 720, img: '⌚', location: 'Belize', comments: 3 },
+        { id: '2', title: 'Signed Fender Stratocaster', bid: 1750, category: 'art', hot: true, time: 1800, img: '🎸', location: 'Cayo', comments: 12 },
+        { id: '3', title: 'Belizean Art Print 2024', bid: 680, category: 'art', hot: false, time: 3600, img: '🖼️', location: 'Stann Creek', comments: 1 },
         { id: '4', title: 'Vintage Leica M3', bid: 920, category: 'tech', hot: false, time: 120, img: '📷', location: 'Orange Walk', comments: 5 },
         { id: '5', title: 'Toyota Hilux 2022', bid: 21500, category: 'vehicles', hot: true, time: 540, img: '🛻', location: 'Belmopan', comments: 42 },
         { id: '6', title: 'Free Desktop Monitor', bid: 0, category: 'free', hot: false, time: 900, img: '🖥️', location: 'Corozal', comments: 8 },
-        { id: '7', title: 'BZ National Flag (Large)', bid: 0, category: 'free', hot: false, time: 1500, img: '🇧🇿', location: 'Dangriga', comments: 2 },
-        { id: '8', title: 'iPhone 15 Pro Max', bid: 1200, category: 'tech', hot: true, time: 300, img: '📱', location: 'San Pedro', comments: 15 }
+        { id: '7', title: 'BZ National Flag (Large)', bid: 0, category: 'free', hot: false, time: 1500, img: '🇧🇿', location: 'Toledo', comments: 2 },
+        { id: '8', title: 'iPhone 15 Pro Max', bid: 1200, category: 'tech', hot: true, time: 300, img: '📱', location: 'Belize', comments: 15 }
     ];
 
     // Initialize Grid
@@ -43,6 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (currentCategory !== 'all') {
             filtered = filtered.filter(l => l.category === currentCategory);
         }
+
+        if (currentDistrict !== 'all') {
+            filtered = filtered.filter(l => l.location === currentDistrict);
+        }
+
         if (currentFilter === 'hot') {
             filtered = filtered.filter(l => l.hot);
         } else if (currentFilter === 'ending') {
@@ -151,6 +157,13 @@ document.addEventListener('DOMContentLoaded', () => {
         currentCategory = cat;
         document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
         document.getElementById(`c-${cat}`).classList.add('active');
+        renderGrid();
+    };
+
+    window.filterDistrict = (dist) => {
+        currentDistrict = dist;
+        document.querySelectorAll('.dist-pill').forEach(b => b.classList.remove('active'));
+        document.getElementById(`d-${dist}`).classList.add('active');
         renderGrid();
     };
 

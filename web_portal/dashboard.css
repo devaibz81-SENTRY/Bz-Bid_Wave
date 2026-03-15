@@ -357,6 +357,37 @@ body.bigscreen .dash-grid { grid-template-columns: repeat(auto-fill, minmax(400p
   border-color: var(--bz-red);
 }
 
+/* District Pills */
+.district-pills {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none; /* Hide scrollbar Firefox */
+}
+.district-pills::-webkit-scrollbar { display: none; } /* Hide scrollbar Chrome/Safari */
+
+.dist-pill {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.dist-pill:hover, .dist-pill.active {
+  background: var(--bz-blue);
+  color: #fff;
+  border-color: var(--bz-blue-light);
+  box-shadow: 0 4px 12px rgba(0, 63, 135, 0.3);
+}
+
 /* Card Actions Overlay */
 .card-actions-overlay {
   position: absolute;
