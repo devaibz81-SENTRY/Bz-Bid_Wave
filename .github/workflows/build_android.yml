@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-android:
-    name: Build Release APK
+    name: Build Debug APK
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -35,31 +35,15 @@ jobs:
           channel: 'stable'
           cache: true
 
-      # 3.5 Decode Keystore
-      - name: Decode Keystore
-        run: |
-          mkdir -p flutter_app/android/app
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | tr -dc 'a-zA-Z0-9+/=' > keystore.b64
-          base64 -d keystore.b64 > flutter_app/android/app/keystore.jks
-          keytool -list -keystore flutter_app/android/app/keystore.jks -storepass android -storetype JKS
-
-      # 3.6 Write key.properties
-      - name: Write key.properties
-        run: |
-          echo "storeFile=keystore.jks" > flutter_app/android/key.properties
-          echo "storePassword=android" >> flutter_app/android/key.properties
-          echo "keyAlias=upload" >> flutter_app/android/key.properties
-          echo "keyPassword=android" >> flutter_app/android/key.properties
-
       # 4. Install dependencies
       - name: Install Flutter Dependencies
         working-directory: ./flutter_app
         run: flutter pub get
 
-      # 5. Build release APK
-      - name: Build Release APK
+      # 5. Build debug APK
+      - name: Build Debug APK
         working-directory: ./flutter_app
-        run: flutter build apk --release
+        run: flutter build apk --debug
 
       # 6. Rename APK with version tag
       - name: Rename APK
@@ -67,14 +51,15 @@ jobs:
         run: |
           VERSION=$(grep '^version:' flutter_app/pubspec.yaml | awk '{print $2}' | tr -d '\r')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          cp flutter_app/build/app/outputs/flutter-apk/app-release.apk "bidwave-v$VERSION.apk"
+          # Use the debug APK for CI-based builds
+          cp flutter_app/build/app/outputs/flutter-apk/app-debug.apk "bidwave-v$VERSION-debug.apk"
 
       # 7. Create GitHub Release and upload APK
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "v${{ steps.rename_apk.outputs.version }}"
-          name: "BZ BidWave v${{ steps.rename_apk.outputs.version }}"
+          name: "BZ BidWave v${{ steps.rename_apk.outputs.version }} (Debug)"
           body: |
             ## BZ BidWave Android App — v${{ steps.rename_apk.outputs.version }}
             🇧🇿 Belize's First Open Bidding Platform
@@ -89,6 +74,6 @@ jobs:
             Download the APK below. Enable "Install from Unknown Sources" in Android Settings before installing.
           draft: false
           prerelease: false
-          files: "bidwave-v${{ steps.rename_apk.outputs.version }}.apk"
+          files: "bidwave-v${{ steps.rename_apk.outputs.version }}-debug.apk"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
