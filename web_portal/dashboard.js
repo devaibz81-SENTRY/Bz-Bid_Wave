@@ -206,16 +206,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 chatInput.value = '';
                 
                 const replies = [
-                    "How much for the Hilux? Is it negotiable?",
-                    "Is that Luxury Timepiece authenticated for Belize Customs?",
-                    "Whats the lowest price you'll take?",
-                    "I want that free monitor! Where can I pick it up?",
-                    "Belize City meetup at the bank?",
-                    "Is the San Ignacio listing still active?",
-                    "Does the guitar come with a case?"
+                    "Just placed a bid on that Hilux! Hope I win 🇧🇿",
+                    "Anyone knows if the Luxury Timepiece has papers?",
+                    "That guitar is sweet! I'm watching it.",
+                    "Is the free monitor still available? I'm in Cayo.",
+                    "Corozal meetup possible if I win?",
+                    "Prices are going up fast today! ⚡",
+                    "Belize District bidders are aggressive lol",
+                    "I really need that tech bundle.",
+                    "Anyone outbidding me on the flag? 🇧🇿",
+                    "Auction room is fire right now! 🔥"
                 ];
                 setTimeout(() => {
-                    addMessage('Bidder_' + Math.floor(Math.random()*900 + 100), replies[Math.floor(Math.random()*replies.length)]);
+                    const usernames = ['BigBidder_BZ', 'Cayo_Queen', 'Corozal_King', 'Belizean_Pro', 'IslandVibes_21', 'MarketMaster'];
+                    const randomName = usernames[Math.floor(Math.random()*usernames.length)];
+                    addMessage(randomName, replies[Math.floor(Math.random()*replies.length)]);
                     
                     const randomListing = mockListings[Math.floor(Math.random()*mockListings.length)];
                     if (randomListing.bid > 0) {
