@@ -31,21 +31,31 @@ jobs:
       - name: Set Up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0'
+          flutter-version: '3.41.4'
           channel: 'stable'
           cache: true
+
+      - name: Flutter Clean
+        run: flutter clean
+        working-directory: ./flutter_app
 
       # 4. Install dependencies
       - name: Install Flutter Dependencies
         working-directory: ./flutter_app
         run: flutter pub get
 
-      # 5. Build debug APK
+      # 5. Install Rust (required for convex_flutter native build)
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      # 6. Build debug APK
       - name: Build Debug APK
         working-directory: ./flutter_app
         run: flutter build apk --debug
 
-      # 6. Rename APK with version tag
+      # 7. Rename APK with version tag
       - name: Rename APK
         id: rename_apk
         run: |
@@ -54,7 +64,7 @@ jobs:
           # Use the debug APK for CI-based builds
           cp flutter_app/build/app/outputs/flutter-apk/app-debug.apk "bidwave-v$VERSION-debug.apk"
 
-      # 7. Create GitHub Release and upload APK
+      # 8. Create GitHub Release and upload APK
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
