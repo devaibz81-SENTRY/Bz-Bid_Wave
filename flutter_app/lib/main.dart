@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:convex/convex.dart';
+import 'package:convex_flutter/convex_flutter.dart';
 
 class EnvironmentConfig {
   static const String clerkPublishableKey = "pk_test_d2VsY29tZS1zbmFpbC02NC5jbGVyay5hY2NvdW50cy5kZXYk";
   static const String convexUrl = "https://zealous-orca-596.convex.cloud";
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await ConvexClient.initialize(
+    ConvexConfig(
+      deploymentUrl: EnvironmentConfig.convexUrl,
+    ),
+  );
   runApp(const BidWaveApp());
 }
 
@@ -38,7 +44,6 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  late final ConvexClient _convex;
   List<dynamic> _listings = [];
   bool _isLoading = true;
   String? _error;
@@ -46,13 +51,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    _convex = ConvexClient(EnvironmentConfig.convexUrl);
     _fetchListings();
   }
 
   Future<void> _fetchListings() async {
     try {
-      final List<dynamic> listings = await _convex.query('listings');
+      final List<dynamic> listings = await ConvexClient.instance.query('listings');
       if (mounted) {
         setState(() {
           _listings = listings;
@@ -71,7 +75,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   void dispose() {
-    _convex.dispose();
+    // ConvexClient.instance is a singleton, we don't dispose it here.
     super.dispose();
   }
 
