@@ -10,6 +10,8 @@ jobs:
   build-android:
     name: Build Release APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -32,6 +34,15 @@ jobs:
           flutter-version: '3.22.0'
           channel: 'stable'
           cache: true
+
+      # 3.5 Decode Keystore
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > flutter_app/android/app/keystore.jks
+          echo "storeFile=keystore.jks" > flutter_app/android/key.properties
+          echo "storePassword=${{ secrets.KEY_STORE_PASSWORD }}" >> flutter_app/android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> flutter_app/android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> flutter_app/android/key.properties
 
       # 4. Install dependencies
       - name: Install Flutter Dependencies
