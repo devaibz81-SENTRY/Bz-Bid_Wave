@@ -45,17 +45,17 @@ jobs:
         id: rename_apk
         run: |
           VERSION=$(grep '^version:' flutter_app/pubspec.yaml | awk '{print $2}' | tr -d '\r')
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
           cp flutter_app/build/app/outputs/flutter-apk/app-release.apk "bidwave-v$VERSION.apk"
 
       # 7. Create GitHub Release and upload APK
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "v${{ env.VERSION }}"
-          name: "BZ BidWave v${{ env.VERSION }}"
+          tag_name: "v${{ steps.rename_apk.outputs.version }}"
+          name: "BZ BidWave v${{ steps.rename_apk.outputs.version }}"
           body: |
-            ## BZ BidWave Android App — v${{ env.VERSION }}
+            ## BZ BidWave Android App — v${{ steps.rename_apk.outputs.version }}
             🇧🇿 Belize's First Open Bidding Platform
 
             ### What's New
@@ -68,6 +68,6 @@ jobs:
             Download the APK below. Enable "Install from Unknown Sources" in Android Settings before installing.
           draft: false
           prerelease: false
-          files: "bidwave-v${{ env.VERSION }}.apk"
+          files: "bidwave-v${{ steps.rename_apk.outputs.version }}.apk"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
