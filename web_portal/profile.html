@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile - BidWave</title>
+  <style>
+    body { margin: 0; font-family: Inter, system-ui, -apple-system; background: #0a0a0f; color: #fff; }
+    .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+    h1 { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 900; margin-bottom: 12px; }
+    .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px; }
+    label { display: block; font-size: 12px; color:#9ca3af; margin-top: 8px; }
+    input, textarea { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #374151; background: rgba(0,0,0,.3); color: #fff; }
+    button { margin-top: 12px; padding: 12px 18px; border-radius: 8px; border: none; font-weight: 700; }
+    .btn { background: #f59e0b; color: #000; }
+  </style>
+</head>
+<body>
+  <header class="card" style="position: sticky; top:0; z-index: 10;">
+    <nav style="display:flex; justify-content: space-between; align-items: center;">
+      <a href="/" style="font-family: 'Syne', sans-serif; font-weight: 900; text-decoration:none; color:#fff;">BID<span style="color:#f59e0b;">WAVE</span></a>
+      <a href="/profile.html" class="btn">Profile</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Your Profile</h1>
+    <p class="hint" style="color:#9ca3af; font-size:14px;">This profile data is stored locally for MVP. In a full prod setup, it will sync to ClerkConvex.
+    </p>
+    <div class="card" id="profileCard">
+      <div style="display:flex; gap:16px; align-items: center;">
+        <div style="width:48px; height:48px; border-radius:50%; background:#1f3a8a; display:flex; align-items:center; justify-content:center;">BZ</div>
+        <div>
+          <div id="displayNameView" style="font-weight:700; font-size:14px;">Display Name</div>
+          <div id="emailView" style="font-size:12px; color:#c7c7c7;">Email</div>
+        </div>
+      </div>
+      <div class="form" style="margin-top:12px;">
+        <label for="editName">Display Name</label>
+        <input id="editName" type="text" placeholder="e.g. BZ_Bidder_01" />
+        <label for="editBio">Bio</label>
+        <textarea id="editBio" rows="3" placeholder="Tell us about you"></textarea>
+        <button class="btn" id="saveProfile">Save Profile</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Simple MVP profile storage in localStorage
+    const profileKey = 'bz_bidwave_profile';
+    const displayNameView = document.getElementById('displayNameView');
+    const emailView = document.getElementById('emailView');
+    const editName = document.getElementById('editName');
+    const editBio = document.getElementById('editBio');
+    const saveBtn = document.getElementById('saveProfile');
+
+    function loadProfile(){
+      const p = JSON.parse(localStorage.getItem(profileKey) || '{}');
+      displayNameView.textContent = p.displayName || 'Your Name';
+      emailView.textContent = p.email || 'email@example.com';
+      editName.value = p.displayName || '';
+      editBio.value = p.bio || '';
+    }
+    function saveProfile(){
+      const p = { displayName: editName.value.trim(), bio: editBio.value.trim(), email: emailView.textContent };
+      localStorage.setItem(profileKey, JSON.stringify(p));
+      loadProfile();
+      alert('Profile saved locally.');
+    }
+    saveBtn.addEventListener('click', saveProfile);
+    document.addEventListener('DOMContentLoaded', loadProfile);
+  </script>
+</body>
+</html>
