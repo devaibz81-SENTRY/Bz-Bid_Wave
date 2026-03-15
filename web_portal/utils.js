@@ -43,9 +43,33 @@ function animateCount(el, target, prefix = '', suffix = '') {
     const ease = 1 - Math.pow(1 - progress, 3);
     const value = Math.floor(start + (target - start) * ease);
     el.textContent = prefix + value.toLocaleString() + suffix;
+    
+    // Auto-shrink for million dollar values
+    autoShrinkText(el);
+
     if (progress < 1) requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
+}
+
+// Auto-shrink text if it overflows its container
+function autoShrinkText(el) {
+    const parent = el.parentElement;
+    if (!parent) return;
+    
+    // Ensure we have a clean slate
+    el.style.fontSize = ''; 
+    
+    const parentWidth = parent.clientWidth;
+    let fontSize = parseFloat(window.getComputedStyle(el).fontSize);
+    
+    // Safety check to prevent infinite loop
+    let iterations = 0;
+    while (el.scrollWidth > parentWidth && fontSize > 9 && iterations < 30) {
+        fontSize -= 1;
+        el.style.fontSize = fontSize + 'px';
+        iterations++;
+    }
 }
 
 // Show toast notification

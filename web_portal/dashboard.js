@@ -94,7 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="dash-card-row">
                         <div>
                             <div style="font-size:10px; color:var(--text-dim); text-transform:uppercase;">${item.bid === 0 ? 'Giveaway' : 'Current Bid'}</div>
-                            <div class="dash-bid" style="${item.bid === 0 ? 'color: var(--success);' : ''}">${item.bid === 0 ? 'FREE' : formatCurrency(item.bid)}</div>
+                            <div class="dash-bid-box">
+                                <span class="dash-bid" style="${item.bid === 0 ? 'color: var(--success);' : ''}">${item.bid === 0 ? 'FREE' : formatCurrency(item.bid)}</span>
+                            </div>
                         </div>
                         <div class="text-right">
                              <div class="countdown" style="font-size:12px; color: ${item.time < 300 ? 'var(--bz-red)' : ''}">${formatTimeRemaining(item.time)}</div>
@@ -104,6 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             grid.appendChild(card);
+            
+            // Apply auto-shrink post-render
+            const bidEl = card.querySelector('.dash-bid');
+            if (bidEl) autoShrinkText(bidEl);
         });
     }
 
@@ -263,8 +269,13 @@ document.addEventListener('DOMContentLoaded', () => {
             let val = parseInt(fbid.textContent.replace(/[$,]/g, ''));
             val += Math.floor(Math.random() * 100 + 50);
             fbid.textContent = formatCurrency(val);
+            autoShrinkText(fbid);
             updateChart();
-            if(document.getElementById('ts-topbid')) document.getElementById('ts-topbid').textContent = formatCurrency(val);
+            if(document.getElementById('ts-topbid')) {
+                const tsTop = document.getElementById('ts-topbid');
+                tsTop.textContent = formatCurrency(val);
+                autoShrinkText(tsTop);
+            }
         }
         
         mockListings.forEach(l => { if(l.time > 0) l.time--; });

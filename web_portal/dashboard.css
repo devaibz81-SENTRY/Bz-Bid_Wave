@@ -110,6 +110,13 @@
   font-weight: 800; 
   line-height: 1; 
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.top-stat-box {
+  width: 140px;
+  max-width: 140px;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 .top-stat-key { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
 
@@ -337,7 +344,19 @@
 .dash-card-body { padding: 20px; }
 .dash-card-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 12px; }
 .dash-card-row { display: flex; justify-content: space-between; align-items: flex-end; }
-.dash-bid { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--primary-light); }
+.dash-bid-box {
+  width: 120px;
+  max-width: 120px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.dash-bid { 
+  font-family: 'Syne', sans-serif; 
+  font-size: 20px; 
+  font-weight: 800; 
+  color: var(--primary-light);
+  white-space: nowrap;
+}
 
 /* BIG SCREEN MODE OVERRIDES */
 body.bigscreen .nav { display: none; }
