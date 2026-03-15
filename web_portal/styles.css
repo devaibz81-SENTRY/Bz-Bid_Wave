@@ -246,6 +246,7 @@ h1, h2, h3, h4 { font-family: 'Syne', sans-serif; }
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
+  height: 70px; /* Force fixed height to eliminate gaps */
 }
 
 .nav-logo {
@@ -333,6 +334,7 @@ h1, h2, h3, h4 { font-family: 'Syne', sans-serif; }
   font-weight: 700;
   line-height: 1;
   color: var(--primary-light);
+  font-variant-numeric: tabular-nums; /* Prevent jitter */
 }
 .countdown-label {
   font-size: 8px;

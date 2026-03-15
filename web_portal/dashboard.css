@@ -36,6 +36,7 @@
   font-size: 24px;
   font-weight: 800;
   color: var(--primary-light);
+  font-variant-numeric: tabular-nums;
 }
 .sidebar-stat-key { font-size: 12px; color: var(--text-muted); }
 
@@ -103,7 +104,13 @@
   justify-content: center;
   font-size: 20px;
 }
-.top-stat-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; line-height: 1; }
+.top-stat-val { 
+  font-family: 'Syne', sans-serif; 
+  font-size: 22px; 
+  font-weight: 800; 
+  line-height: 1; 
+  font-variant-numeric: tabular-nums;
+}
 .top-stat-key { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
 
 /* Featured */
@@ -464,6 +471,7 @@ body.bigscreen .dash-grid { grid-template-columns: repeat(auto-fill, minmax(400p
   gap: 48px;
   z-index: 100;
   backdrop-filter: blur(20px);
+  margin-bottom: -1px; /* Overlap slightly to prevent sub-pixel gap at absolute bottom */
 }
 .sash-stripe {
   position: absolute;
@@ -473,6 +481,7 @@ body.bigscreen .dash-grid { grid-template-columns: repeat(auto-fill, minmax(400p
     var(--bz-blue) 0%, var(--bz-blue) 45%, 
     var(--bz-red) 45%, var(--bz-red) 55%, 
     var(--bz-blue) 55%, var(--bz-blue) 100%);
+  margin-top: -1px; /* Ensure no hairline gap at the top */
 }
 @media (max-width: 600px) {
   .national-sash { gap: 20px; font-size: 10px; height: 50px; }
