@@ -1,0 +1,14 @@
+{
+  "name": "bidding-app-backend",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "convex dev"
+  },
+  "dependencies": {
+    "convex": "^1.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+.DS_Store
+
+# Backend
+backend/node_modules/
+backend/.env
+backend/.convex/
+
+# Flutter
+flutter_app/.dart_tool/
+flutter_app/.packages
+flutter_app/build/
+flutter_app/ios/Pods/
+flutter_app/android/app/build/
+
+# Web Portal
+web_portal/.vercel/
+web_portal/node_modules/
+
+# OS/IDEs
+.vscode/
+.idea/
+*.log

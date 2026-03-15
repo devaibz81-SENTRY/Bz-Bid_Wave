@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join BZ BidWave — Belize's First Open Bidding Platform</title>
+  <meta name="description" content="Create your BZ BidWave account and start bidding on local auctions in Belize today." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="onboarding.css" />
+</head>
+<body>
+  <div class="bg-canvas" aria-hidden="true">
+    <div class="bg-grid"></div>
+    <div class="bg-spot"></div>
+  </div>
+
+  <!-- BZ stripe -->
+  <div aria-hidden="true" style="position:fixed; top:0; left:0; right:0; height:4px; z-index:99; background: linear-gradient(to right, var(--bz-blue) 0%, var(--bz-blue) 33%, #fff 33%, #fff 34%, var(--bz-red) 34%, var(--bz-red) 66%, #fff 66%, #fff 67%, var(--bz-blue) 67%);"></div>
+
+  <nav class="nav" style="background:transparent; border:none; backdrop-filter:none;">
+    <a href="index.html" class="nav-logo">⚡ <span>BZ</span> BidWave</a>
+    <a href="index.html" class="btn btn-ghost" style="font-size:12px;">← Back to Home</a>
+  </nav>
+
+  <main class="onboard-root">
+    <div class="onboard-container glass">
+      <!-- Left side: Marketing / Context -->
+      <section class="onboard-info" aria-label="Why join BZ BidWave">
+        <div class="badge badge-live mb-4">Phase One Launch</div>
+        <h1 class="onboard-h1">The Future Of<br /><span class="cyan-text">Belizean</span><br />Auctions.</h1>
+        <p class="onboard-p">Join the first open bidding platform designed specifically for Belize. Secure, transparent, and real-time.</p>
+        
+        <div class="onboard-features">
+          <div class="onboard-feat">
+            <div class="onboard-feat-icon">⚡</div>
+            <div>
+              <strong>Instant Bids</strong>
+              <p>No more waiting. Bids update in real-time across the country.</p>
+            </div>
+          </div>
+          <div class="onboard-feat">
+            <div class="onboard-feat-icon">🔒</div>
+            <div>
+              <strong>Verified Sellers</strong>
+              <p>We work with trusted local partners to ensure fair play.</p>
+            </div>
+          </div>
+          <div class="onboard-feat">
+            <div class="onboard-feat-icon">📱</div>
+            <div>
+              <strong>On The Go</strong>
+              <p>Manage your bids from your browser or Android device.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="onboard-vibe-footer">
+          🇧🇿 Proudly built in Belize for Belizeans.
+        </div>
+      </section>
+
+      <!-- Right side: The Flow -->
+      <section class="onboard-flow" aria-label="Sign up steps">
+        <!-- Progress dots -->
+        <div class="steps-progress" id="steps-progress">
+          <div class="step-dot active" data-step="1"></div>
+          <div class="step-dot" data-step="2"></div>
+          <div class="step-dot" data-step="3"></div>
+        </div>
+
+        <!-- Step 1: Account -->
+        <div class="step-content active" id="step-1">
+          <h2 class="step-title">Create Account</h2>
+          <p class="step-sub">Enter your details to get started with BZ BidWave.</p>
+          
+          <form class="onboard-form" id="form-step-1">
+            <div class="input-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" class="input-field" placeholder="name@email.com" required autocomplete="email" />
+            </div>
+            <div class="input-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" class="input-field" placeholder="••••••••" required autocomplete="new-password" />
+              <div class="pw-strength"><div class="pw-bar" id="pw-bar"></div></div>
+            </div>
+            <button type="submit" class="btn btn-primary w-full mt-4">Continue →</button>
+          </form>
+          
+          <div class="onboard-alt">
+            Already have an account? <a href="#" id="toggle-signin">Sign In</a>
+          </div>
+        </div>
+
+        <!-- Step 2: Profile -->
+        <div class="step-content" id="step-2">
+          <h2 class="step-title">Your Profile</h2>
+          <p class="step-sub">How should we identify you in the bidding arena?</p>
+          
+          <form class="onboard-form" id="form-step-2">
+            <div class="input-group">
+              <label for="username">Display Name</label>
+              <input type="text" id="username" class="input-field" placeholder="e.g. BZ_Bidder_01" required />
+            </div>
+            <div class="input-group">
+              <label>What brings you here?</label>
+              <div class="role-picker">
+                <div class="role-opt active" data-role="bidder">
+                  <span>🔨</span>
+                  <strong>Bidder</strong>
+                  <p>I want to find & buy items</p>
+                </div>
+                <div class="role-opt" data-role="seller">
+                  <span>🏷️</span>
+                  <strong>Seller</strong>
+                  <p>I want to auction items</p>
+                </div>
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <button type="button" class="btn btn-ghost w-full" id="back-to-1">Back</button>
+              <button type="submit" class="btn btn-primary w-full">Almost Done →</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Step 3: Interest -->
+        <div class="step-content" id="step-3">
+          <h2 class="step-title">Final Touches</h2>
+          <p class="step-sub">Select categories you're interested in.</p>
+          
+          <div class="tag-grid" id="tag-grid">
+            <div class="tag-chip active">Luxury ⌚</div>
+            <div class="tag-chip">Vehicles 🚗</div>
+            <div class="tag-chip">Real Estate 🏠</div>
+            <div class="tag-chip">Electronics 💻</div>
+            <div class="tag-chip">Collectibles 🎨</div>
+            <div class="tag-chip">Music Gear 🎸</div>
+            <div class="tag-chip">Land 🇧🇿</div>
+            <div class="tag-chip">Industrial 🚜</div>
+          </div>
+          
+          <button type="button" class="btn btn-primary btn-lg w-full mt-8" id="finish-btn">Complete Setup ✨</button>
+        </div>
+
+        <!-- Success overlay (hidden by default) -->
+        <div class="onboard-success" id="onboard-success">
+          <div class="success-icon">✓</div>
+          <h2 class="step-title">You're In!</h2>
+          <p class="step-sub">Your BZ BidWave account is ready. Welcome to the platform.</p>
+          <a href="dashboard.html" class="btn btn-primary btn-lg mt-6">Go to Dashboard →</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="onboarding.js"></script>
+</body>
+</html>

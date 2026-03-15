@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Get BZ BidWave — Belize's Android App</title>
+  <meta name="description" content="Download the BZ BidWave Android app. Bid, track, and win from anywhere in Belize." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="download.css" />
+</head>
+<body>
+  <div class="bg-canvas" aria-hidden="true">
+    <div class="bg-grid"></div>
+    <div class="bg-spot"></div>
+  </div>
+
+  <!-- BZ stripe -->
+  <div aria-hidden="true" style="position:fixed; top:72px; left:0; right:0; height:3px; z-index:99; background: linear-gradient(to right, var(--bz-blue) 0%, var(--bz-blue) 33%, #fff 33%, #fff 34%, var(--bz-red) 34%, var(--bz-red) 66%, #fff 66%, #fff 67%, var(--bz-blue) 67%);"></div>
+
+  <header>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="index.html" class="nav-logo">⚡ <span>BZ</span> BidWave</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="onboarding.html">Get Started</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="download.html" class="active" aria-current="page">Download</a></li>
+      </ul>
+      <a href="onboarding.html" class="btn btn-primary">Join Free →</a>
+    </nav>
+  </header>
+
+  <section class="section dl-hero" style="min-height:100vh; display:flex; align-items:center; padding-top:120px;">
+    <div class="container">
+      <div class="dl-grid">
+        <!-- Content -->
+        <div class="dl-content">
+          <div class="hero-eyebrow">
+            <span class="hero-eyebrow-dot"></span>
+            <span class="hero-eyebrow-line"></span>
+            Android v1.0.0 Now Available
+          </div>
+          <h1 class="dl-h1">The Full<br />Experience<br /><span class="cyan-text">On Mobile.</span></h1>
+          <p class="dl-p">Bid instantly from your pocket. Receive real-time outbid notifications, upload listing photos directly from your camera, and track your wins across Belize.</p>
+
+          <!-- Main cards row -->
+          <div class="flex gap-4 mt-6 wrap">
+            <!-- APK Card -->
+            <div class="dl-main-card glass" style="flex: 2; min-width: 300px;">
+              <div class="dl-main-header">
+                <div class="dl-icon-box">🤖</div>
+                <div style="flex:1;">
+                  <div class="dl-platform">Android APK</div>
+                  <div class="dl-version-label" id="apk-version">v1.2.4 Build — Stable</div>
+                </div>
+                <a href="https://github.com/YOUR_USERNAME/YOUR_REPO/releases/latest" id="apk-link" class="btn btn-accent btn-lg">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download APK
+                </a>
+              </div>
+              <div class="dl-footer-meta">
+                <span id="dl-size">34.2 MB</span>
+                <span class="sep">·</span>
+                <span>Android 8.0+</span>
+                <span class="sep">·</span>
+                <span id="dl-date">Updated Mar 14, 2026</span>
+              </div>
+            </div>
+
+            <!-- QR Card -->
+            <div class="dl-main-card glass" style="flex: 1; min-width: 200px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+              <div id="qr-container" style="background: #fff; padding: 10px; border-radius: 12px; margin-bottom: 12px; line-height: 0;">
+                <img id="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://github.com/YOUR_USERNAME/YOUR_REPO/releases/latest" alt="Scan to download BZ BidWave" width="120" height="120" style="display: block;" />
+              </div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Scan to Download</div>
+            </div>
+          </div>
+
+          <!-- Features strip -->
+          <div class="grid-2 mt-6">
+            <div class="small-feat card">
+              <div class="sf-icon">🔔</div>
+              <div>
+                <strong>Notifications</strong>
+                <p>Never miss a bid with instant push alerts.</p>
+              </div>
+            </div>
+            <div class="small-feat card">
+              <div class="sf-icon">📸</div>
+              <div>
+                <strong>Photo Upload</strong>
+                <p>Snap and list items in under 60 seconds.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone Mockup -->
+        <div class="dl-visual">
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="p-nav">⚡ BZ BidWave</div>
+              <div class="p-hero" style="background: linear-gradient(135deg, var(--bz-blue), var(--bz-blue-light));">
+                <div class="p-emoji">⌚</div>
+                <div class="p-bid-label">Top Bid</div>
+                <div class="p-bid-val" id="p-bid">$4,200</div>
+              </div>
+              <div class="p-list">
+                <div class="p-item">🎸 <span>Signed Guitar</span> <strong>$1.7K</strong></div>
+                <div class="p-item">👟 <span>Air Jordan</span> <strong>$3.1K</strong></div>
+                <div class="p-item">🏠 <span>Belize Lot</span> <strong>$25K</strong></div>
+              </div>
+              <div class="p-btn">Place Bid →</div>
+            </div>
+          </div>
+          <div class="phone-glow"></div>
+        </div>
+      </div>
+
+      <!-- Install Steps -->
+      <div class="install-section mt-8">
+        <h2 class="section-title" style="text-align:center; margin-bottom:48px;">How To Install</h2>
+        <div class="grid-4">
+          <div class="step-card">
+            <div class="step-idx">01</div>
+            <h3>Download APK</h3>
+            <p>Tap the download button above to get the latest BidWave installer.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-idx">02</div>
+            <h3>Enable Sources</h3>
+            <p>Allow "Install Unknown Apps" in your Android security settings.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-idx">03</div>
+            <h3>Open Installer</h3>
+            <p>Find the file in your downloads folder and tap to install.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-idx">04</div>
+            <h3>Start Bidding</h3>
+            <p>Open the app, sign in, and you're ready to win from anywhere.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="border-top: 1px solid var(--border); padding: 40px 60px; display:flex; align-items:center; justify-content:space-between; position:relative; z-index:1;">
+    <a href="index.html" class="nav-logo" style="font-size:16px;">⚡ <span>BZ</span> BidWave</a>
+    <p style="color:var(--text-dim); font-size:12px;">© 2026 BZ BidWave. All rights reserved.</p>
+  </footer>
+
+  <script src="utils.js"></script>
+  <script src="download.js"></script>
+</body>
+</html>
