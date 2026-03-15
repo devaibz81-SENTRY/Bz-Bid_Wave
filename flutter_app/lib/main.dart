@@ -216,7 +216,7 @@ class DashboardScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.02),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white05),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Row(
         children: [
