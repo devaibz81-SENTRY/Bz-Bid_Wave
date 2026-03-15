@@ -191,12 +191,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const msg = document.createElement('div');
         msg.className = `chat-msg ${isMine ? 'mine' : ''}`;
         msg.innerHTML = `
-            <span class="msg-sender">${sender}</span>
+            <div class="msg-header">
+                <span class="msg-sender">${sender}</span>
+                ${!isMine ? `
+                <div class="msg-actions">
+                    <button class="msg-action-btn" onclick="blockUser('${sender}')" title="Block User">🚫</button>
+                    <button class="msg-action-btn" onclick="shareChat('${sender}')" title="Reply to User">💬</button>
+                </div>
+                ` : ''}
+            </div>
             <p class="msg-content">${content}</p>
         `;
         chatMessages.appendChild(msg);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
+
+    window.blockUser = (user) => {
+        showToast(`User ${user} blocked 🚫`, 'danger');
+        // In a real app, hide their messages
+    };
+
+    window.shareChat = (user) => {
+        chatInput.value = `@${user} `;
+        chatInput.focus();
+    };
 
     if (chatSend) {
         chatSend.onclick = () => {
