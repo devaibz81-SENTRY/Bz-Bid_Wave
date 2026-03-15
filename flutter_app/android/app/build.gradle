@@ -28,7 +28,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 def keyProperties = new Properties()
 def keyPropertiesFile = rootProject.file('key.properties')
 if (keyPropertiesFile.exists()) {
-    keyPropertiesFile.getReader('UTF-8').withReader { reader ->
+    keyPropertiesFile.withReader('UTF-8') { reader ->
         keyProperties.load(reader)
     }
 }
