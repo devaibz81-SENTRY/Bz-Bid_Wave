@@ -38,7 +38,7 @@ jobs:
       # 3.5 Decode Keystore
       - name: Decode Keystore
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > flutter_app/android/app/keystore.jks
+          echo '${{ secrets.KEYSTORE_BASE64 }}' | tr -d '[:space:]' | base64 --decode > flutter_app/android/app/keystore.jks
           echo "storeFile=keystore.jks" > flutter_app/android/key.properties
           echo "storePassword=${{ secrets.KEY_STORE_PASSWORD }}" >> flutter_app/android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> flutter_app/android/key.properties
