@@ -40,7 +40,7 @@ jobs:
         run: |
           mkdir -p flutter_app/android/app
           echo "${{ secrets.KEYSTORE_BASE64 }}" | tr -dc 'a-zA-Z0-9+/=' > keystore.b64
-          base64 --decode keystore.b64 > flutter_app/android/app/keystore.jks
+          base64 -d keystore.b64 > flutter_app/android/app/keystore.jks
           keytool -list -keystore flutter_app/android/app/keystore.jks -storepass android -storetype JKS
 
       # 3.6 Write key.properties
