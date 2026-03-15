@@ -1,77 +1,77 @@
-/* Onboarding Logic v2 — Multi-step with BZ Flair */
+import { ConvexClient } from "convex/browser";
 
-document.addEventListener('DOMContentLoaded', () => {
-    let currentStep = 1;
-    const totalSteps = 3;
-
-    // Elements
-    const dots = document.querySelectorAll('.step-dot');
-    const steps = document.querySelectorAll('.step-content');
-    const roleOpts = document.querySelectorAll('.role-opt');
-    const tagChips = document.querySelectorAll('.tag-chip');
+document.addEventListener('DOMContentLoaded', async () => {
+    // Convex Client Initialization
+    const client = new ConvexClient("https://zealous-orca-596.convex.cloud");
     const successPanel = document.getElementById('onboard-success');
 
-    // Navigation
-    function goToStep(step) {
-        steps.forEach(s => s.classList.remove('active'));
-        dots.forEach(d => d.classList.remove('active'));
+    const clerkPublishableKey = "pk_test_d2VsY29tZS1zbmFpbC02NC5jbGVyay5hY2NvdW50cy5kZXYk";
+    const frontendApi = "welcome-snail-64.clerk.accounts.dev";
+
+    const script = document.createElement("script");
+    script.setAttribute("data-clerk-publishable-key", clerkPublishableKey);
+    script.async = true;
+    script.src = `https://${frontendApi}/npm/@clerk/clerk-js@latest/clerk.browser.js`;
+    script.crossOrigin = "anonymous";
+
+    script.addEventListener("load", async function () {
+        await window.Clerk.load({
+            // Initialize Clerk
+        });
+
+        const mountNode = document.getElementById('clerk-mount');
         
-        document.getElementById(`step-${step}`).classList.add('active');
-        document.querySelector(`.step-dot[data-step="${step}"]`).classList.add('active');
-        currentStep = step;
-    }
+        if (window.Clerk.user) {
+            handleAuthenticatedUser();
+        } else {
+            // User not signed in, mount the Sign Up component
+            window.Clerk.mountSignUp(mountNode, {
+                afterSignUpUrl: window.location.href, // Triggers reload/auth state change
+                afterSignInUrl: window.location.href,
+            });
+        }
 
-    // Handlers
-    document.getElementById('form-step-1').onsubmit = (e) => {
-        e.preventDefault();
-        // Here we would call Clerk / Convex Sign Up
-        // const email = document.getElementById('email').value;
-        // const password = document.getElementById('password').value;
-        goToStep(2);
-    };
-
-    document.getElementById('form-step-2').onsubmit = (e) => {
-        e.preventDefault();
-        goToStep(3);
-    };
-
-    document.getElementById('back-to-1').onclick = () => goToStep(1);
-
-    // Role selection
-    roleOpts.forEach(opt => {
-        opt.onclick = () => {
-            roleOpts.forEach(o => o.classList.remove('active'));
-            opt.classList.add('active');
-        };
+        // Listener for changes (like successful sign-up completion)
+        window.Clerk.addListener(async ({ user }) => {
+            if (user) {
+                handleAuthenticatedUser();
+            }
+        });
     });
+    
+    document.body.appendChild(script);
 
-    // Tag selection
-    tagChips.forEach(chip => {
-        chip.onclick = () => {
-            chip.classList.toggle('active');
-        };
-    });
+    async function handleAuthenticatedUser() {
+        // Hide the clerk mount and steps
+        const step1 = document.getElementById('step-1');
+        if(step1) step1.classList.remove('active');
+        
+        const stepsProgress = document.getElementById('steps-progress');
+        if(stepsProgress) stepsProgress.style.display = 'none';
 
-    // Finish
-    document.getElementById('finish-btn').onclick = () => {
-        // Here we would push the profile to Convex
-        successPanel.classList.add('active');
-    };
+        // Retrieve the Convex JWT from Clerk
+        const token = await window.Clerk.session.getToken({ template: 'convex' });
+        client.setAuth(async () => token);
 
-    // Password strength
-    const passwordInput = document.getElementById('password');
-    const pwBar = document.getElementById('pw-bar');
-    if (passwordInput) {
-        passwordInput.oninput = () => {
-            const val = passwordInput.value;
-            let strength = 0;
-            if (val.length > 5) strength += 30;
-            if (val.length > 8) strength += 40;
-            if (/[0-9]/.test(val)) strength += 15;
-            if (/[!@#$%^&*]/.test(val)) strength += 15;
+        try {
+            // Register the user footprint in our Convex DB
+            const userName = window.Clerk.user.fullName || window.Clerk.user.firstName || "Bidder " + window.Clerk.user.id.substring(0, 5);
+            
+            const userId = await client.mutation("auth:storeClerkUser", {
+                name: userName,
+                role: "bidder",
+                tags: []
+            });
 
-            pwBar.style.width = strength + '%';
-            pwBar.style.background = strength < 40 ? 'var(--danger)' : strength < 80 ? 'var(--accent)' : 'var(--success)';
-        };
+            // Save basic public session info locally for optimistic UI updates in chat/dashboard
+            localStorage.setItem('bz_user_id', userId);
+            localStorage.setItem('bz_user_name', userName);
+
+            // Show Success Panel
+            if(successPanel) successPanel.classList.add('active');
+        } catch (err) {
+            console.error("Failed to sync user with Convex:", err);
+            alert("There was an issue syncing your profile. Please try refreshing.");
+        }
     }
 });

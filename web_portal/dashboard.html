@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="dashboard.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
   <div class="bg-canvas" aria-hidden="true">
@@ -22,7 +23,7 @@
 
   <header>
     <nav class="nav" aria-label="Main navigation">
-      <a href="index.html" class="nav-logo">⚡ <span>BZ</span> BidWave</a>
+      <a href="index.html" class="nav-logo"><i data-lucide="zap" style="color:var(--primary-light)"></i> <span>BZ</span> BidWave</a>
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="onboarding.html">Get Started</a></li>
@@ -32,6 +33,7 @@
       <div class="flex gap-2 items-center">
         <span class="badge badge-live">Live</span>
         <button class="btn btn-ghost" onclick="toggleScreenMode()" id="screen-btn" aria-pressed="false">⛶ Big Screen</button>
+        <div id="clerk-user-btn" style="margin-left: 12px; height: 32px;"></div>
       </div>
     </nav>
   </header>
@@ -71,7 +73,7 @@
       <!-- Top stats -->
       <div class="top-stats" role="region" aria-label="Key statistics">
         <div class="top-stat card">
-          <div class="top-stat-icon" aria-hidden="true">🔥</div>
+          <div class="top-stat-icon" aria-hidden="true"><i data-lucide="flame" style="color:var(--danger)"></i></div>
           <div>
             <div class="top-stat-box">
                 <div class="top-stat-val" id="ts-topbid">$4,350</div>
@@ -80,21 +82,21 @@
           </div>
         </div>
         <div class="top-stat card">
-          <div class="top-stat-icon" aria-hidden="true">⚡</div>
+          <div class="top-stat-icon" aria-hidden="true"><i data-lucide="zap" style="color:var(--accent-light)"></i></div>
           <div>
             <div class="top-stat-val" id="ts-bids">247</div>
             <div class="top-stat-key">Total Bids Today</div>
           </div>
         </div>
         <div class="top-stat card">
-          <div class="top-stat-icon" aria-hidden="true">💰</div>
+          <div class="top-stat-icon" aria-hidden="true"><i data-lucide="dollar-sign" style="color:var(--success)"></i></div>
           <div>
             <div class="top-stat-val" id="ts-vol">$41,200</div>
             <div class="top-stat-key">Today's Volume</div>
           </div>
         </div>
         <div class="top-stat card">
-          <div class="top-stat-icon" aria-hidden="true">🇧🇿</div>
+          <div class="top-stat-icon" aria-hidden="true"><i data-lucide="trophy" style="color:var(--primary)"></i></div>
           <div>
             <div class="top-stat-val" id="ts-won">38</div>
             <div class="top-stat-key">Auctions Won Today</div>
@@ -105,7 +107,7 @@
       <!-- Featured auction -->
       <article class="featured-auction card" id="featured" aria-labelledby="featured-title">
         <div class="featured-left">
-          <div class="featured-img" id="f-img" style="background: url('https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800') center/cover; font-size: 0;" aria-hidden="true">⌚</div>
+          <div class="featured-img" id="f-img" style="background: linear-gradient(135deg, #18181b, #09090b); border: 1px solid var(--border);" aria-hidden="true"><i data-lucide="watch" style="width:64px; height:64px; color:var(--primary)"></i></div>
         </div>
         <div class="featured-body">
           <div class="flex items-center gap-3 mb-3">
@@ -137,8 +139,8 @@
         <h2 style="font-family:'Syne',sans-serif; font-size:18px; font-weight:800; text-transform:uppercase; letter-spacing:1px;">Marketplace</h2>
         <div class="flex gap-2" role="group" aria-label="Sort auctions">
           <button class="btn btn-ghost" onclick="filterSort('all')" id="f-all" style="font-size:12px; padding:6px 14px;" aria-pressed="true">All</button>
-          <button class="btn btn-ghost" onclick="filterSort('hot')" id="f-hot" style="font-size:12px; padding:6px 14px;" aria-pressed="false">🔥 Hot</button>
-          <button class="btn btn-ghost" onclick="filterSort('ending')" id="f-ending" style="font-size:12px; padding:6px 14px;" aria-pressed="false">⏰ Ending</button>
+          <button class="btn btn-ghost" onclick="filterSort('hot')" id="f-hot" style="font-size:12px; padding:6px 14px; display:flex; align-items:center; gap:4px;" aria-pressed="false"><i data-lucide="flame" style="width:14px; height:14px;"></i> Hot</button>
+          <button class="btn btn-ghost" onclick="filterSort('ending')" id="f-ending" style="font-size:12px; padding:6px 14px; display:flex; align-items:center; gap:4px;" aria-pressed="false"><i data-lucide="clock" style="width:14px; height:14px;"></i> Ending</button>
         </div>
       </div>
 
@@ -256,6 +258,9 @@
   </div>
 
   <script src="utils.js"></script>
-  <script src="dashboard.js"></script>
+  <script type="module" src="dashboard.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
 </body>
 </html>

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+class EnvironmentConfig {
+  static const String clerkPublishableKey = "pk_test_d2VsY29tZS1zbmFpbC02NC5jbGVyay5hY2NvdW50cy5kZXYk";
+  static const String convexUrl = "https://zealous-orca-596.convex.cloud";
+}
+
 void main() {
   runApp(const BidWaveApp());
 }

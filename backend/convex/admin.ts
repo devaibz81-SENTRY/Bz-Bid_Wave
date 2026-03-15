@@ -53,3 +53,16 @@ export const listPendingReports = query({
       .collect();
   },
 });
+
+export const createSeedUser = mutation({
+    args: {
+        name: v.string(),
+        email: v.string(),
+        clerkId: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const existing = await ctx.db.query("users").withIndex("by_clerk_id", q => q.eq("clerkId", args.clerkId)).unique();
+        if (existing) return existing._id;
+        return await ctx.db.insert("users", args);
+    }
+});
