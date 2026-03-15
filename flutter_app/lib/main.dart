@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:convex/convex.dart';
 
 class EnvironmentConfig {
   static const String clerkPublishableKey = "pk_test_d2VsY29tZS1zbmFpbC02NC5jbGVyay5hY2NvdW50cy5kZXYk";
@@ -29,8 +30,50 @@ class BidWaveApp extends StatelessWidget {
   }
 }
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  late final ConvexClient _convex;
+  List<dynamic> _listings = [];
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _convex = ConvexClient(EnvironmentConfig.convexUrl);
+    _fetchListings();
+  }
+
+  Future<void> _fetchListings() async {
+    try {
+      final List<dynamic> listings = await _convex.query('listings');
+      if (mounted) {
+        setState(() {
+          _listings = listings;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _convex.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,40 +132,73 @@ class DashboardScreen extends StatelessWidget {
                         const SizedBox(height: 32),
                         
                         // Featured Card (Editorial Style)
-                        _buildFeaturedCard(),
-                        
-                        const SizedBox(height: 48),
-                        Text(
-                          'MARKETPLACE',
-                          style: GoogleFonts.syne(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 2,
-                            color: Colors.white54,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
+                        _isLoading
+                            ? const Center(child: CircularProgressIndicator(color: Color(0xFF8B5CF6)))
+                            : _error != null
+                                ? Center(child: Text('Error: $_error', style: TextStyle(color: Colors.red)))
+                                : _listings.isEmpty
+                                    ? const Center(child: Text('No listings found', style: TextStyle(color: Colors.white54)))
+                                    : Column(
+                                        children: [
+                                          _buildFeaturedCard(),
+                                          const SizedBox(height: 48),
+                                          Text(
+                                            'MARKETPLACE',
+                                            style: GoogleFonts.syne(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w800,
+                                              letterSpacing: 2,
+                                              color: Colors.white54,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 16),
+                                        ],
+                                      ),
                       ],
                     ),
                   ),
                 ),
                 
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      _buildAuctionItem('Toyota Hilux 2024', '\$45,000', '🛻', 'VEHICLES'),
-                      _buildAuctionItem('Luxury Timepiece', '\$4,350', '⌚', 'LUXURY'),
-                      _buildAuctionItem('Mahogany Art', '\$1,200', '🎨', 'ART'),
-                      _buildAuctionItem('iPhone 15 Pro', '\$1,100', '📱', 'TECH'),
-                      const SizedBox(height: 100), // Spacing for bottom sash
-                    ]),
+                // Only show the list if we have data and not loading/error
+                if (!_isLoading && _error == null && _listings.isNotEmpty)
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate(
+                        _listings.take(4).map((listing) {
+                          // Assuming each listing has: title, price, category, and maybe an icon or image
+                          // We'll use placeholder values if fields are missing
+                          final title = listing['title'] ?? 'Unknown Item';
+                          final price = listing['price'] ?? '\$0';
+                          // We don't have an icon field in the backend, so we'll use a default based on category or a fixed icon
+                          final category = listing['category'] ?? 'GENERAL';
+                          // Map category to an icon (simplified)
+                          String icon;
+                          switch (category.toLowerCase()) {
+                            case 'vehicles':
+                              icon = '🚗';
+                              break;
+                            case 'luxury':
+                              icon = '⌚';
+                              break;
+                            case 'art':
+                              icon = '🎨';
+                              break;
+                            case 'tech':
+                              icon = '📱';
+                              break;
+                            default:
+                              icon = '📦';
+                          }
+                          return _buildAuctionItem(title, price, icon, category);
+                        }).toList(),
+                      ),
+                    ),
                   ),
-                ),
               ],
             ),
           ),
-
+          
           // National Sash Footer (aligned with Web)
           Positioned(
             bottom: 0,
@@ -136,7 +212,7 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                   // Sash Stripe
+                  // Sash Stripe
                   Positioned(
                     top: 0,
                     left: 0,
@@ -163,9 +239,9 @@ class DashboardScreen extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: _fetchListings, // Refresh on press
         backgroundColor: const Color(0xFF8B5CF6),
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.refresh, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );

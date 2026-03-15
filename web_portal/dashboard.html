@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - BidWave</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Syne and SpaceGrotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom fonts */
+        .font-syne { font-family: 'Syne', sans-serif; }
+        .font-space { font-family: 'Space Grotesk', sans-serif; }
+        /* Glass effect */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        /* Gold text gradient */
+        .gold-text {
+            background: linear-gradient(135deg, #fde047 0%, #f59e0b 50%, #b45309 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Button styles */
+        .btn-gold {
+            background: linear-gradient(135deg, #fde047 0%, #f59e0b 100%);
+            color: #000;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 12px 24px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.5);
+            filter: brightness(1.1);
+        }
+        .btn-outline {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.01);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        /* Marble background effect */
+        .bg-marble {
+            background-color: #09090b;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(245, 158, 11, 0.05) 0%, transparent 50%),
+                url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
+            background-attachment: fixed;
+        }
+        /* Input styles */
+        .input-primary {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            color: white;
+        }
+        .input-primary:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+    </style>
+</head>
+<body class="antialiased bg-marble text-white relative z-10">
+    <div class="marble-canvas">
+        <div class="marble-vein"></div>
+        <div class="marble-vein-2"></div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 glass-panel py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between px-6">
+            <a href="/" class="font-syne text-2xl font-black flex items-center gap-2">
+                BID<span class="gold-text">WAVE</span>
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8">
+                <a href="/" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Home</a>
+                <a href="/dashboard.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Dashboard</a>
+                <a href="/download.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Download App</a>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <!-- Placeholder for user avatar -->
+                <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-xs">
+                    BZ
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Dashboard Content -->
+    <main class="max-w-7xl mx-auto px-6 py-20">
+        <!-- Top Banner -->
+        <div class="h-1 bg-gradient-to-r from-blue-700 via-white to-red-600 mb-8"></div>
+        
+        <!-- Header -->
+        <header class="glass-panel border-b border-white/5 py-4 px-8 mb-6">
+            <div class="flex items-center justify-between">
+                <a href="/" class="font-syne text-xl font-black flex items-center gap-2">
+                    ⚡ BID<span class="gold-text">WAVE</span>
+                </a>
+                
+                <nav class="hidden md:flex gap-8">
+                    <a href="/" class="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white">Home</a>
+                    <a href="/dashboard.html" class="text-xs font-bold uppercase tracking-wider gold-text">Dashboard</a>
+                    <a href="/download.html" class="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white">Download App</a>
+                </nav>
+                
+                <div class="flex items-center gap-4">
+                    <!-- Big screen toggle placeholder -->
+                    <button onclick="alert('Big screen toggle would be implemented with JS')"
+                            class="btn-outline py-2 px-4 text-[10px] uppercase font-bold tracking-widest">
+                        ⛶ Big Screen
+                    </button>
+                    <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-xs">
+                        BZ
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex max-w-[1600px] mx-auto w-full">
+            {/* Sidebar */}
+            <aside class="w-80 border-r border-white/5 p-8 hidden xl:flex flex-col gap-10">
+                <div>
+                    <div class="text-[10px] uppercase font-black tracking-[0.2em] text-slate-500 mb-6">Market Overview</div>
+                    <div class="space-y-6">
+                        <div class="glass-card p-4">
+                            <div class="text-2xl font-black font-syne">14</div>
+                            <div class="text-[10px] uppercase text-slate-500 font-bold">Active Auctions</div>
+                        </div>
+                        <div class="glass-card p-4">
+                            <div class="text-2xl font-black font-syne">247</div>
+                            <div class="text-[10px] uppercase text-slate-500 font-bold">Live Bidders</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex-1">
+                    <div class="text-[10px] uppercase font-black tracking-[0.2em] text-slate-500 mb-6">Live Activity</div>
+                    <div class="space-y-4">
+                        {/* Placeholder for live activity - would be dynamic in real app */}
+                        <div class="flex gap-3 items-start animate-pulse">
+                            <div class="w-2 h-2 rounded-full bg-emerald-500 mt-1"></div>
+                            <div class="text-[11px] leading-tight">
+                                <span class="text-white font-bold">User_142</span> placed a bid on <span class="text-primary font-bold">Toyota Hilux</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 items-start animate-pulse">
+                            <div class="w-2 h-2 rounded-full bg-emerald-500 mt-1"></div>
+                            <div class="text-[11px] leading-tight">
+                                <span class="text-white font-bold">User_242</span> placed a bid on <span class="text-primary font-bold">Luxury Timepiece</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 items-start animate-pulse">
+                            <div class="w-2 h-2 rounded-full bg-emerald-500 mt-1"></div>
+                            <div class="text-[11px] leading-tight">
+                                <span class="text-white font-bold">User_342</span> placed a bid on <span class="text-primary font-bold">Mahogany Art</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pt-6 border-t border-white/5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">
+                    🇧🇿 Proudly Belizean
+                </div>
+            </aside>
+            
+            {/* Main Content */}
+            <main class="flex-1 p-8 lg:p-12 overflow-y-auto">
+                {/* Top Cards */}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <div class="glass-card p-6 border-l-2 border-l-primary/30">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Highest Bid</div>
+                            <div class="text-xl">🔥</div>
+                        </div>
+                        <div class="text-3xl font-black font-syne gold-text">$4,350</div>
+                    </div>
+                    <div class="glass-card p-6 border-l-2 border-l-primary/30">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Total Bids</div>
+                            <div class="text-xl">⚡</div>
+                        </div>
+                        <div class="text-3xl font-black font-syne gold-text">247</div>
+                    </div>
+                    <div class="glass-card p-6 border-l-2 border-l-primary/30">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Volume</div>
+                            <div class="text-xl">💰</div>
+                        </div>
+                        <div class="text-3xl font-black font-syne gold-text">$41.2k</div>
+                    </div>
+                    <div class="glass-card p-6 border-l-2 border-l-primary/30">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Won Today</div>
+                            <div class="text-xl">🏆</div>
+                        </div>
+                        <div class="text-3xl font-black font-syne gold-text">38</div>
+                    </div>
+                </div>
+                
+                {/* Featured */}
+                <section class="glass-card p-1 rounded-[32px] mb-12 relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent"></div>
+                    <div class="relative z-10 grid lg:grid-cols-5 gap-0 items-stretch bg-slate-950/40 rounded-[28px]">
+                        <div class="lg:col-span-2 overflow-hidden">
+                            <img 
+                                src="https://images.unsplash.com/photo-1547991230-516a7c82dd60?auto=format&fit=crop&q=80&w=600"
+                                alt="Feature Item"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                            />
+                        </div>
+                        <div class="lg:col-span-3 p-10 flex flex-col justify-between">
+                            <div>
+                                <div class="flex gap-2 mb-4">
+                                    <span class="bg-red-500/10 text-red-500 text-[9px] font-black uppercase tracking-[0.2em] px-2 py-1 border border-red-500/20 rounded-md">Hot</span>
+                                    <span class="bg-emerald-500/10 text-emerald-500 text-[9px] font-black uppercase tracking-[0.2em] px-2 py-1 border border-emerald-500/20 rounded-md">Live</span>
+                                </div>
+                                <h2 className="font-syne text-4xl font-black mb-4 uppercase">Luxury Timepiece Collection</h2>
+                                <p className="text-slate-400 text-sm max-w-lg leading-relaxed">Rare vintage watches, authenticated and certified. BZ BidWave's most watched auction this week — exclusive to the Belizean community.</p>
+                            </div>
+                            
+                            <div className="mt-8 flex flex-wrap items-end justify-between gap-6">
+                                <div>
+                                    <div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Current Bid</div>
+                                    <div className="text-4xl font-syne font-black gold-text">$4,350.00</div>
+                                </div>
+                                <a href="/onboarding.html" className="btn-gold px-12 py-4">Place Bid Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                {/* Grid Header */}
+                <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-8 border-b border-white/5 pb-8">
+                    <div>
+                        <h2 className="font-syne text-2xl font-black uppercase tracking-tight">Marketplace</h2>
+                        <div className="flex gap-2 mt-4">
+                            {["All Districts", "Belize", "Cayo", "Stann Creek"].map((d) => (
+                                <button key={d} className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase transition-all ${d === 'All Districts' ? 'bg-primary text-black' : 'bg-slate-900 text-slate-500 hover:text-white'}`}>{d}</button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex gap-2">
+                        <button className="btn-outline py-2 px-6 text-[10px] uppercase font-bold tracking-widest bg-slate-900 border-none">Sort: Newest</button>
+                        <button className="btn-gold py-2 px-6 text-[10px] uppercase font-bold tracking-widest">+ List Item</button>
+                    </div>
+                </div>
+                
+                {/* Placeholder Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1,2,3,4,5,6].map((i) => (
+                        <div key={i} className="glass-card overflow-hidden group">
+                            <div className="aspect-video relative overflow-hidden">
+                                <img 
+                                    src={`https://images.unsplash.com/photo-${1500000000000 + (i * 10000000)}?auto=format&fit=crop&q=80&w=400`}
+                                    alt="Listing"
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
+                                <div className="absolute top-4 right-4 bg-black/60 backdrop-blur px-2 py-1 rounded text-[10px] font-bold">2h 14m left</div>
+                            </div>
+                            <div className="p-6">
+                                <div className="text-[10px] uppercase font-bold text-primary tracking-widest mb-1">Vehicles</div>
+                                <h3 className="font-bold text-lg mb-3">2024 Toyota Hilux Pro</h3>
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <div className="text-[9px] uppercase text-slate-500 font-bold">Current Bid</div>
+                                        <div className="text-xl font-syne font-black">$45,000</div>
+                                    </div>
+                                    <a href="/onboarding.html" className="text-[10px] font-bold uppercase gold-text hover:underline">View Auction →</a>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </main>
+        </div>
+    </main>
+</body>
+</html>
