@@ -1,12 +1,5 @@
 {
   "version": 2,
-  "_comment": "Triggered: 2026-03-15 15:42",
-  "name": "bidwave-portal",
-  "public": true,
-  "routes": [
-    { "src": "/", "dest": "/index.html" },
-    { "src": "/onboarding", "dest": "/onboarding.html" },
-    { "src": "/dashboard", "dest": "/dashboard.html" },
-    { "src": "/download", "dest": "/download.html" }
-  ]
+  "_comment": "Triggered: 2026-03-15 15:58 - Fixed Next.js Routing",
+  "name": "bidwave-portal"
 }
