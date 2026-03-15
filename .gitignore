@@ -23,5 +23,6 @@ web_portal/node_modules/
 .idea/
 # Android Secrets
 bzbidwave.jks
+keystore.jks
 flutter_app/android/key.properties
 
