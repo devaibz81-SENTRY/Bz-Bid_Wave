@@ -21,4 +21,7 @@ web_portal/node_modules/
 # OS/IDEs
 .vscode/
 .idea/
-*.log
+# Android Secrets
+bzbidwave.jks
+flutter_app/android/key.properties
+
