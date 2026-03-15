@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "web_portal/index.html", "use": "@vercel/static" },
+    { "src": "web_portal/*.html", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/", "dest": "/web_portal/index.html" },
+    { "src": "/(.*)", "dest": "/web_portal/$1" }
+  ]
+}
