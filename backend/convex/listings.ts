@@ -23,7 +23,32 @@ export const listActive = query({
   },
 });
 
-// ... existing get and generateUploadUrl ...
+// Get a single listing by ID with its bids
+export const getById = query({
+  args: { id: v.id("listings") },
+  handler: async (ctx, args) => {
+    const listing = await ctx.db.get(args.id);
+    if (!listing) return null;
+    
+    const bids = await ctx.db.query("bids")
+      .withIndex("by_listing", (q) => q.eq("listing", args.id))
+      .order("desc")
+      .take(50);
+    
+    return { listing, bids };
+  },
+});
+
+// Get user's listings
+export const getBySeller = query({
+  args: { sellerId: v.id("users") },
+  handler: async (ctx, args) => {
+    return await ctx.db.query("listings")
+      .filter((q) => q.eq(q.field("sellerId"), args.sellerId))
+      .order("desc")
+      .collect();
+  },
+});
 
 // Create a new listing
 export const create = mutation({

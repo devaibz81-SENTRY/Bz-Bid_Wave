@@ -1,5 +1,25 @@
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+
+// Get bids for a listing
+export const getByListing = query({
+  args: { listingId: v.id("listings") },
+  handler: async (ctx, args) => {
+    return await ctx.db.query("bids")
+      .withIndex("by_listing", (q) => q.eq("listingId", args.listingId))
+      .order("desc")
+      .collect();
+  },
+});
+
+// Get user's bids
+export const getByBidder = query({
+  args: { bidderId: v.id("users") },
+  handler: async (ctx, args) => {
+    const allBids = await ctx.db.query("bids").collect();
+    return allBids.filter(b => b.bidderId === args.bidderId);
+  },
+});
 
 export const place = mutation({
   args: {
