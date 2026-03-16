@@ -110,23 +110,23 @@
             
             <div class="categories-scroll">
                 <div class="category-card">
-                    <div class="category-icon">🚗</div>
+                    <img src="/icon-vehicles.svg" alt="Vehicles" class="category-icon">
                     <span class="category-name">Vehicles</span>
                 </div>
                 <div class="category-card">
-                    <div class="category-icon">⌚</div>
+                    <img src="/icon-watches.svg" alt="Watches" class="category-icon">
                     <span class="category-name">Watches</span>
                 </div>
                 <div class="category-card">
-                    <div class="category-icon">🏠</div>
+                    <img src="/icon-property.svg" alt="Property" class="category-icon">
                     <span class="category-name">Property</span>
                 </div>
                 <div class="category-card">
-                    <div class="category-icon">🎨</div>
+                    <img src="/icon-art.svg" alt="Art" class="category-icon">
                     <span class="category-name">Art</span>
                 </div>
                 <div class="category-card">
-                    <div class="category-icon">📱</div>
+                    <img src="/icon-tech.svg" alt="Tech" class="category-icon">
                     <span class="category-name">Tech</span>
                 </div>
             </div>
@@ -579,10 +579,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
             margin-bottom: 8px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             transition: all 0.2s;
+            color: var(--accent);
+        }
+
+        .category-icon img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
         }
 
         .category-card:hover .category-icon {
