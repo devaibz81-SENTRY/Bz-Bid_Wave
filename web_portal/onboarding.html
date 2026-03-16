@@ -32,6 +32,12 @@
   </style>
 </head>
 <body>
+  <script src="/js/auth.js"></script>
+  <script>
+    if (isLoggedIn()) {
+      window.location.href = '/dashboard.html';
+    }
+  </script>
   <div class="wrapper">
     <section class="left">
       <div>

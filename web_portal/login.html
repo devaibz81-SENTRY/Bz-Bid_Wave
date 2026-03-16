@@ -18,10 +18,16 @@
   </style>
 </head>
 <body>
+  <script src="/js/auth.js"></script>
+  <script>
+    if (isLoggedIn()) {
+      window.location.href = '/dashboard.html';
+    }
+  </script>
   <header class="card" style="border-radius: 0; position: sticky; top: 0;">
     <nav style="display:flex; justify-content: space-between; align-items: center;">
       <a href="/" style="font-family: 'Syne', sans-serif; font-weight: 900; text-decoration: none; color: #fff; font-size: 20px;">BID<span style="color:#f59e0b;">WAVE</span> 🇧🇿</a>
-      <a href="/" style="color: #9ca3af; text-decoration: none; font-size: 14px;">← Back</a>
+      <a href="/index.html" style="color: #9ca3af; text-decoration: none; font-size: 14px;">← Back</a>
     </nav>
   </header>
 

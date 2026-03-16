@@ -19,6 +19,12 @@
     { "src": "/privacy.html", "dest": "/web_portal/privacy.html" },
     { "src": "/tos", "dest": "/web_portal/tos.html" },
     { "src": "/tos.html", "dest": "/web_portal/tos.html" },
+    { "src": "/list-item", "dest": "/web_portal/list-item.html" },
+    { "src": "/list-item.html", "dest": "/web_portal/list-item.html" },
+    { "src": "/listing", "dest": "/web_portal/listing.html" },
+    { "src": "/listing.html", "dest": "/web_portal/listing.html" },
+    { "src": "/js/(.*)", "dest": "/web_portal/js/$1" },
+    { "src": "/public/(.*)", "dest": "/web_portal/public/$1" },
     { "src": "/(.*)", "dest": "/web_portal/$1" }
   ]
 }

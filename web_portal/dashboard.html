@@ -88,6 +88,12 @@
     </style>
 </head>
 <body class="antialiased bg-marble text-white relative z-10">
+    <script src="/js/auth.js"></script>
+    <script>
+      if (!isLoggedIn()) {
+        window.location.href = '/login.html';
+      }
+    </script>
     <div class="marble-canvas">
         <div class="marble-vein"></div>
         <div class="marble-vein-2"></div>
@@ -100,17 +106,16 @@
                 BID<span class="gold-text">WAVE</span>
             </a>
             
-            <div class="hidden md:flex items-center gap-8">
+            <div class="hidden md:flex items-center gap-8 auth-links">
                 <a href="/" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Home</a>
                 <a href="/dashboard.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Dashboard</a>
                 <a href="/download.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Download App</a>
             </div>
             
             <div class="flex items-center gap-4">
-                <!-- Placeholder for user avatar -->
-                <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-xs">
+                <a href="/profile.html" class="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-xs user-avatar hover:ring-2 hover:ring-yellow-400 transition-all">
                     BZ
-                </div>
+                </a>
             </div>
         </div>
     </nav>
@@ -127,7 +132,7 @@
                     ⚡ BID<span class="gold-text">WAVE</span>
                 </a>
                 
-                <nav class="hidden md:flex gap-8">
+                <nav class="hidden md:flex gap-8 auth-links">
                     <a href="/" class="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white">Home</a>
                     <a href="/dashboard.html" class="text-xs font-bold uppercase tracking-wider gold-text">Dashboard</a>
                     <a href="/download.html" class="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white">Download App</a>
@@ -139,9 +144,9 @@
                             class="btn-outline py-2 px-4 text-[10px] uppercase font-bold tracking-widest">
                         ⛶ Big Screen
                     </button>
-                    <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-xs">
+                    <a href="/profile.html" class="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-xs user-avatar hover:ring-2 hover:ring-yellow-400 transition-all">
                         BZ
-                    </div>
+                    </a>
                 </div>
             </div>
         </header>
@@ -263,47 +268,184 @@
                 {/* Grid Header */}
                 <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-8 border-b border-white/5 pb-8">
                     <div>
-                        <h2 className="font-syne text-2xl font-black uppercase tracking-tight">Marketplace</h2>
-                        <div className="flex gap-2 mt-4">
-                            {["All Districts", "Belize", "Cayo", "Stann Creek"].map((d) => (
-                                <button key={d} className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase transition-all ${d === 'All Districts' ? 'bg-primary text-black' : 'bg-slate-900 text-slate-500 hover:text-white'}`}>{d}</button>
-                            ))}
+                        <h2 class="font-syne text-2xl font-black uppercase tracking-tight">Marketplace</h2>
+                        <div class="flex gap-2 mt-4" id="districtFilters">
+                            <button onclick="filterByDistrict('')" class="district-btn active px-4 py-2 rounded-full text-[10px] font-bold uppercase transition-all bg-yellow-500 text-black">All</button>
+                            <button onclick="filterByDistrict('Belize')" class="district-btn px-4 py-2 rounded-full text-[10px] font-bold uppercase transition-all bg-slate-900 text-slate-500 hover:text-white">Belize</button>
+                            <button onclick="filterByDistrict('Cayo')" class="district-btn px-4 py-2 rounded-full text-[10px] font-bold uppercase transition-all bg-slate-900 text-slate-500 hover:text-white">Cayo</button>
+                            <button onclick="filterByDistrict('Stann Creek')" class="district-btn px-4 py-2 rounded-full text-[10px] font-bold uppercase transition-all bg-slate-900 text-slate-500 hover:text-white">Stann Creek</button>
                         </div>
                     </div>
-                    <div className="flex gap-2">
-                        <button className="btn-outline py-2 px-6 text-[10px] uppercase font-bold tracking-widest bg-slate-900 border-none">Sort: Newest</button>
-                        <button className="btn-gold py-2 px-6 text-[10px] uppercase font-bold tracking-widest">+ List Item</button>
+                    <div class="flex gap-2">
+                        <button onclick="sortListings()" class="btn-outline py-2 px-6 text-[10px] uppercase font-bold tracking-widest bg-slate-900 border-none">Sort: Newest</button>
+                        <a href="/list-item.html" class="btn-gold py-2 px-6 text-[10px] uppercase font-bold tracking-widest">+ List Item</a>
                     </div>
                 </div>
                 
-                {/* Placeholder Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[1,2,3,4,5,6].map((i) => (
-                        <div key={i} className="glass-card overflow-hidden group">
-                            <div className="aspect-video relative overflow-hidden">
-                                <img 
-                                    src={`https://images.unsplash.com/photo-${1500000000000 + (i * 10000000)}?auto=format&fit=crop&q=80&w=400`}
-                                    alt="Listing"
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                />
-                                <div className="absolute top-4 right-4 bg-black/60 backdrop-blur px-2 py-1 rounded text-[10px] font-bold">2h 14m left</div>
-                            </div>
-                            <div className="p-6">
-                                <div className="text-[10px] uppercase font-bold text-primary tracking-widest mb-1">Vehicles</div>
-                                <h3 className="font-bold text-lg mb-3">2024 Toyota Hilux Pro</h3>
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <div className="text-[9px] uppercase text-slate-500 font-bold">Current Bid</div>
-                                        <div className="text-xl font-syne font-black">$45,000</div>
-                                    </div>
-                                    <a href="/onboarding.html" className="text-[10px] font-bold uppercase gold-text hover:underline">View Auction →</a>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                <!-- Dynamic Listings Grid -->
+                <div id="listingsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                
+                <!-- No Listings Message -->
+                <div id="noListings" class="hidden text-center py-16">
+                    <div class="text-6xl mb-4">📦</div>
+                    <h3 class="font-syne text-xl font-bold mb-2">No listings yet</h3>
+                    <p class="text-slate-400 mb-6">Be the first to list an item!</p>
+                    <a href="/list-item.html" class="btn-gold">List an Item</a>
                 </div>
             </main>
         </div>
     </main>
+
+    <script>
+        let currentDistrict = '';
+        let currentSort = 'newest';
+
+        function getListings() {
+            const listings = localStorage.getItem('bz_listings');
+            if (listings) return JSON.parse(listings);
+            
+            // Seed sample data for demo
+            const samples = [
+                {
+                    id: '1', title: '2024 Toyota Hilux D4D', category: 'Vehicles', district: 'Belize',
+                    startingPrice: 45000, currentBid: 48500, reservedPrice: 50000,
+                    imageUrl: 'https://images.unsplash.com/photo-1626668893632-6f3a4466d22f?auto=format&fit=crop&q=80&w=400',
+                    endTime: new Date(Date.now() + 2*24*60*60*1000).toISOString(),
+                    saleType: 'auction', bidCount: 12, bids: [
+                        { bidder: 'BZ_Buyer_1', amount: 48500, time: Date.now() - 3600000 },
+                        { bidder: 'BZ_Buyer_2', amount: 47000, time: Date.now() - 7200000 }
+                    ], status: 'active', seller: 'AutoDealer_BZ'
+                },
+                {
+                    id: '2', title: 'Luxury Timepiece Collection', category: 'Art & Antiques', district: 'Cayo',
+                    startingPrice: 3500, currentBid: 4350, reservedPrice: 4000,
+                    imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=400',
+                    endTime: new Date(Date.now() + 5*24*60*60*1000).toISOString(),
+                    saleType: 'auction', bidCount: 8, bids: [], status: 'active', seller: 'LuxuryDealer'
+                },
+                {
+                    id: '3', title: 'Beachfront Property - Placencia', category: 'Real Estate', district: 'Stann Creek',
+                    startingPrice: 250000, currentBid: 275000, reservedPrice: 300000,
+                    imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=400',
+                    endTime: new Date(Date.now() + 7*24*60*60*1000).toISOString(),
+                    saleType: 'auction', bidCount: 15, bids: [], status: 'active', seller: 'BZ_Properties'
+                },
+                {
+                    id: '4', title: 'MacBook Pro M3 Max', category: 'Electronics', district: 'Belize',
+                    startingPrice: 3500, currentBid: 3500, reservedPrice: 0,
+                    imageUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=400',
+                    endTime: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
+                    saleType: 'big_sale', bidCount: 0, bids: [], status: 'active', seller: 'TechGuy_BZ'
+                },
+                {
+                    id: '5', title: 'Looking to Trade: ATV for Boat', category: 'Trade', district: 'Orange Walk',
+                    startingPrice: 0, currentBid: 0, reservedPrice: 0,
+                    imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=400',
+                    endTime: new Date(Date.now() + 14*24*60*60*1000).toISOString(),
+                    saleType: 'trade', bidCount: 0, bids: [], status: 'active', seller: 'OutdoorMike'
+                },
+                {
+                    id: '6', title: 'Commercial Printer - HP', category: 'Machinery', district: 'Cayo',
+                    startingPrice: 800, currentBid: 950, reservedPrice: 0,
+                    imageUrl: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?auto=format&fit=crop&q=80&w=400',
+                    endTime: new Date(Date.now() + 1*24*60*60*1000).toISOString(),
+                    saleType: 'auction', bidCount: 4, bids: [], status: 'active', seller: 'OfficePlus'
+                }
+            ];
+            localStorage.setItem('bz_listings', JSON.stringify(samples));
+            return samples;
+        }
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('en-BZ', { style: 'currency', currency: 'BZD' }).format(price);
+        }
+
+        function getTimeLeft(endTime) {
+            const diff = new Date(endTime) - new Date();
+            if (diff <= 0) return 'Ended';
+            const days = Math.floor(diff / (1000*60*60*24));
+            const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+            if (days > 0) return `${days}d ${hours}h left`;
+            const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
+            return `${hours}h ${mins}m left`;
+        }
+
+        function getSaleTypeBadge(type) {
+            if (type === 'auction') return '<span class="bg-yellow-500/10 text-yellow-500 text-[9px] font-black uppercase tracking-[0.2em] px-2 py-1 border border-yellow-500/20 rounded-md">Auction</span>';
+            if (type === 'big_sale') return '<span class="bg-blue-500/10 text-blue-500 text-[9px] font-black uppercase tracking-[0.2em] px-2 py-1 border border-blue-500/20 rounded-md">Big Sale</span>';
+            if (type === 'trade') return '<span class="bg-purple-500/10 text-purple-500 text-[9px] font-black uppercase tracking-[0.2em] px-2 py-1 border border-purple-500/20 rounded-md">Trade</span>';
+            return '';
+        }
+
+        function renderListings(listings) {
+            const grid = document.getElementById('listingsGrid');
+            const noListings = document.getElementById('noListings');
+            
+            if (!listings || listings.length === 0) {
+                grid.innerHTML = '';
+                noListings.classList.remove('hidden');
+                return;
+            }
+            
+            noListings.classList.add('hidden');
+            grid.innerHTML = listings.map(item => `
+                <div class="glass-card overflow-hidden group cursor-pointer" onclick="viewListing('${item.id}')">
+                    <div class="aspect-video relative overflow-hidden">
+                        <img src="${item.imageUrl}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <div class="absolute top-4 right-4 bg-black/60 backdrop-blur px-2 py-1 rounded text-[10px] font-bold">${getTimeLeft(item.endTime)}</div>
+                        <div class="absolute top-4 left-4">${getSaleTypeBadge(item.saleType)}</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-[10px] uppercase font-bold text-yellow-500 tracking-widest mb-1">${item.category}</div>
+                        <h3 class="font-bold text-lg mb-3">${item.title}</h3>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-[9px] uppercase text-slate-500 font-bold">${item.saleType === 'trade' ? 'Looking For' : 'Current'}</div>
+                                <div class="text-xl font-syne font-black gold-text">${item.saleType === 'trade' ? 'See Details' : formatPrice(item.currentBid)}</div>
+                            </div>
+                            <span class="text-[10px] font-bold uppercase gold-text hover:underline">View →</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterByDistrict(district) {
+            currentDistrict = district;
+            let listings = getListings();
+            if (district) listings = listings.filter(l => l.district === district);
+            renderListings(listings);
+            
+            document.querySelectorAll('.district-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-yellow-500', 'text-black');
+                btn.classList.add('bg-slate-900', 'text-slate-500');
+            });
+            event.target.classList.add('active', 'bg-yellow-500', 'text-black');
+            event.target.classList.remove('bg-slate-900', 'text-slate-500');
+        }
+
+        function sortListings() {
+            let listings = getListings();
+            if (currentDistrict) listings = listings.filter(l => l.district === currentDistrict);
+            
+            if (currentSort === 'newest') {
+                currentSort = 'ending';
+                listings.sort((a,b) => new Date(a.endTime) - new Date(b.endTime));
+            } else {
+                currentSort = 'newest';
+                listings.sort((a,b) => b.createdAt - a.createdAt);
+            }
+            renderListings(listings);
+        }
+
+        function viewListing(id) {
+            window.location.href = '/listing.html?id=' + id;
+        }
+
+        // Load listings on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            renderListings(getListings());
+        });
+    </script>
 </body>
 </html>

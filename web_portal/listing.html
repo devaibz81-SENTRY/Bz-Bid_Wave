@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Listing - BidWave</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .font-syne { font-family: 'Syne', sans-serif; }
+    .glass-panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+    .gold-text { color: #f59e0b; }
+    .btn-gold { background: #f59e0b; color: #000; font-weight: 800; padding: 12px 24px; border-radius: 8px; }
+    .btn-outline { border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #fff; padding: 12px 24px; border-radius: 8px; }
+    .input-primary { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #374151; background: rgba(0,0,0,0.3); color: #fff; }
+    .input-primary:focus { outline: none; border-color: #f59e0b; }
+  </style>
+</head>
+<body class="bg-[#09090b] text-white min-h-screen">
+  <script src="/js/auth.js"></script>
+  <script>
+    if (!isLoggedIn()) {
+      window.location.href = '/login.html';
+    }
+  </script>
+
+  <!-- Navigation -->
+  <nav class="glass-panel py-3 px-6">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <a href="/dashboard.html" class="font-syne text-xl font-black flex items-center gap-2">
+        BID<span class="gold-text">WAVE</span> 🇧🇿
+      </a>
+      <div class="flex items-center gap-4">
+        <a href="/dashboard.html" class="text-sm text-slate-400 hover:text-white">Dashboard</a>
+        <a href="/profile.html" class="w-8 h-8 rounded-full bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center text-yellow-500 font-bold text-xs user-avatar">BZ</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-6 py-8">
+    <a href="/dashboard.html" class="text-slate-400 hover:text-white mb-6 inline-block">← Back to Marketplace</a>
+    
+    <div id="listingContent" class="grid lg:grid-cols-2 gap-8">
+      <!-- Image -->
+      <div class="glass-panel rounded-xl overflow-hidden">
+        <img id="listingImage" src="" alt="" class="w-full aspect-video object-cover" />
+      </div>
+      
+      <!-- Details -->
+      <div>
+        <div id="saleTypeBadge" class="mb-3"></div>
+        <h1 id="listingTitle" class="font-syne text-3xl font-black mb-2">Loading...</h1>
+        <p id="listingCategory" class="text-sm text-slate-400 mb-6"></p>
+        
+        <!-- Bid Section -->
+        <div class="glass-panel rounded-xl p-6 mb-6">
+          <div id="auctionSection">
+            <div class="flex justify-between items-end mb-4">
+              <div>
+                <div class="text-xs uppercase text-slate-500 font-bold">Current Bid</div>
+                <div id="currentBid" class="text-4xl font-black gold-text">$0</div>
+                <div id="bidCount" class="text-sm text-slate-400">0 bids</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs uppercase text-slate-500 font-bold">Time Left</div>
+                <div id="timeLeft" class="text-xl font-bold text-red-400">--</div>
+              </div>
+            </div>
+            
+            <!-- Bid History -->
+            <div id="bidHistory" class="mb-4 max-h-32 overflow-y-auto"></div>
+            
+            <!-- Place Bid -->
+            <div class="border-t border-slate-700 pt-4">
+              <div class="flex gap-2 mb-3">
+                <input id="bidAmount" type="number" class="input-primary" placeholder="Your bid (BZD)" />
+                <button onclick="placeBid()" class="btn-gold">Place Bid</button>
+              </div>
+              <p id="bidMessage" class="text-sm"></p>
+            </div>
+          </div>
+          
+          <div id="bigSaleSection" class="hidden">
+            <div class="text-4xl font-black gold-text mb-2" id="salePrice">$0</div>
+            <button class="btn-gold w-full">Buy Now</button>
+          </div>
+          
+          <div id="tradeSection" class="hidden">
+            <p class="text-slate-400 mb-4">This item is for trade. Contact the seller to discuss.</p>
+            <button class="btn-outline w-full">Contact Seller</button>
+          </div>
+        </div>
+        
+        <!-- Auto-Bid Setup -->
+        <div class="glass-panel rounded-xl p-6 mb-6">
+          <div class="flex items-center gap-2 mb-4">
+            <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span class="font-bold">Auto-Bid</span>
+          </div>
+          <p class="text-sm text-slate-400 mb-4">Set up automatic bidding and we'll bid for you!</p>
+          <div class="grid grid-cols-2 gap-3">
+            <input id="autoBidCap" type="number" class="input-primary" placeholder="Max bid (cap)" />
+            <select id="autoBidIncrement" class="input-primary">
+              <option value="5">+$5</option>
+              <option value="10" selected>+$10</option>
+              <option value="25">+$25</option>
+              <option value="50">+$50</option>
+              <option value="100">+$100</option>
+            </select>
+          </div>
+          <button onclick="setupAutoBid()" class="btn-outline w-full mt-3">Enable Auto-Bid</button>
+        </div>
+        
+        <!-- Description -->
+        <div class="glass-panel rounded-xl p-6">
+          <h3 class="font-bold mb-3">Description</h3>
+          <p id="listingDescription" class="text-slate-400 text-sm"></p>
+          <div class="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-500">
+            <div>Seller: <span id="sellerName" class="text-white"></span></div>
+            <div>District: <span id="sellerDistrict" class="text-white"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentListing = null;
+    
+    function getListings() {
+      return JSON.parse(localStorage.getItem('bz_listings') || '[]');
+    }
+    
+    function getUrlParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+    
+    function loadListing() {
+      const id = getUrlParam('id');
+      const listings = getListings();
+      currentListing = listings.find(l => l.id === id);
+      
+      if (!currentListing) {
+        document.getElementById('listingTitle').textContent = 'Listing not found';
+        return;
+      }
+      
+      const user = getUser();
+      
+      document.getElementById('listingImage').src = currentListing.imageUrl;
+      document.getElementById('listingTitle').textContent = currentListing.title;
+      document.getElementById('listingCategory').textContent = currentListing.category + ' • ' + currentListing.district;
+      document.getElementById('listingDescription').textContent = currentListing.description;
+      document.getElementById('sellerName').textContent = currentListing.seller;
+      document.getElementById('sellerDistrict').textContent = currentListing.district;
+      
+      // Sale type
+      const badge = document.getElementById('saleTypeBadge');
+      if (currentListing.saleType === 'auction') {
+        badge.innerHTML = '<span class="bg-yellow-500/10 text-yellow-500 text-xs font-bold px-3 py-1 rounded">Auction</span>';
+        document.getElementById('auctionSection').classList.remove('hidden');
+      } else if (currentListing.saleType === 'big_sale') {
+        badge.innerHTML = '<span class="bg-blue-500/10 text-blue-500 text-xs font-bold px-3 py-1 rounded">Big Sale</span>';
+        document.getElementById('bigSaleSection').classList.remove('hidden');
+        document.getElementById('salePrice').textContent = formatPrice(currentListing.startingPrice);
+      } else if (currentListing.saleType === 'trade') {
+        badge.innerHTML = '<span class="bg-purple-500/10 text-purple-500 text-xs font-bold px-3 py-1 rounded">Trade</span>';
+        document.getElementById('tradeSection').classList.remove('hidden');
+      }
+      
+      // Update bid display
+      updateBidDisplay();
+      updateTimeLeft();
+      
+      // Start timer
+      setInterval(updateTimeLeft, 60000);
+    }
+    
+    function formatPrice(price) {
+      return new Intl.NumberFormat('en-BZ', { style: 'currency', currency: 'BZD' }).format(price);
+    }
+    
+    function updateBidDisplay() {
+      if (!currentListing) return;
+      document.getElementById('currentBid').textContent = formatPrice(currentListing.currentBid);
+      document.getElementById('bidCount').textContent = (currentListing.bidCount || 0) + ' bids';
+      
+      // Show bid history
+      const historyEl = document.getElementById('bidHistory');
+      const bids = currentListing.bids || [];
+      if (bids.length > 0) {
+        historyEl.innerHTML = bids.slice(-5).reverse().map(b => 
+          '<div class="flex justify-between text-sm py-1"><span class="text-white">' + b.bidder + '</span><span class="gold-text">' + formatPrice(b.amount) + '</span></div>'
+        ).join('');
+      } else {
+        historyEl.innerHTML = '<div class="text-sm text-slate-500">No bids yet. Be the first!</div>';
+      }
+    }
+    
+    function updateTimeLeft() {
+      if (!currentListing) return;
+      const diff = new Date(currentListing.endTime) - new Date();
+      const el = document.getElementById('timeLeft');
+      
+      if (diff <= 0) {
+        el.textContent = 'Ended';
+        el.className = 'text-xl font-bold text-slate-500';
+        return;
+      }
+      
+      const days = Math.floor(diff / (1000*60*60*24));
+      const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+      const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
+      
+      if (days > 0) el.textContent = days + 'd ' + hours + 'h';
+      else if (hours > 0) el.textContent = hours + 'h ' + mins + 'm';
+      else el.textContent = mins + 'm left';
+      
+      el.className = 'text-xl font-bold ' + (hours < 1 ? 'text-red-400' : 'text-emerald-400');
+    }
+    
+    function placeBid() {
+      const amount = parseFloat(document.getElementById('bidAmount').value);
+      const user = getUser();
+      const msgEl = document.getElementById('bidMessage');
+      
+      if (!amount || amount <= currentListing.currentBid) {
+        msgEl.textContent = 'Bid must be higher than current bid of ' + formatPrice(currentListing.currentBid);
+        msgEl.className = 'text-sm text-red-400';
+        return;
+      }
+      
+      // Add bid
+      if (!currentListing.bids) currentListing.bids = [];
+      currentListing.bids.push({
+        bidder: user.displayName,
+        amount: amount,
+        time: Date.now()
+      });
+      currentListing.currentBid = amount;
+      currentListing.bidCount = (currentListing.bidCount || 0) + 1;
+      
+      // Save
+      const listings = getListings();
+      const idx = listings.findIndex(l => l.id === currentListing.id);
+      if (idx >= 0) listings[idx] = currentListing;
+      localStorage.setItem('bz_listings', JSON.stringify(listings));
+      
+      msgEl.textContent = 'Bid placed successfully!';
+      msgEl.className = 'text-sm text-emerald-400';
+      
+      updateBidDisplay();
+      document.getElementById('bidAmount').value = '';
+      
+      // Check auto-bids
+      checkAutoBids(amount);
+    }
+    
+    function checkAutoBids(currentAmount) {
+      const listings = getListings();
+      const user = getUser();
+      
+      listings.forEach(listing => {
+        if (listing.saleType !== 'auction' || !listing.autoBid || !listing.autoBid.enabled) return;
+        if (listing.id === currentListing.id) return;
+        
+        const auto = listing.autoBid;
+        if (currentAmount < auto.cap && currentAmount > auto.currentBid) {
+          const newBid = Math.min(currentAmount + auto.increment, auto.cap);
+          auto.currentBid = newBid;
+          
+          listing.bids = listing.bids || [];
+          listing.bids.push({
+            bidder: user.displayName + ' (Auto)',
+            amount: newBid,
+            time: Date.now()
+          });
+          listing.currentBid = newBid;
+          listing.bidCount = (listing.bidCount || 0) + 1;
+        }
+      });
+      
+      localStorage.setItem('bz_listings', JSON.stringify(listings));
+    }
+    
+    function setupAutoBid() {
+      const cap = parseFloat(document.getElementById('autoBidCap').value);
+      const increment = parseInt(document.getElementById('autoBidIncrement').value);
+      const msgEl = document.getElementById('bidMessage');
+      
+      if (!cap || cap <= currentListing.currentBid) {
+        msgEl.textContent = 'Auto-bid cap must be higher than current bid';
+        msgEl.className = 'text-sm text-red-400';
+        return;
+      }
+      
+      // Save auto-bid settings
+      const listings = getListings();
+      const idx = listings.findIndex(l => l.id === currentListing.id);
+      if (idx >= 0) {
+        listings[idx].autoBid = {
+          enabled: true,
+          cap: cap,
+          increment: increment,
+          currentBid: currentListing.currentBid
+        };
+        localStorage.setItem('bz_listings', JSON.stringify(listings));
+        currentListing = listings[idx];
+      }
+      
+      msgEl.textContent = 'Auto-bid enabled! We\'ll bid up to ' + formatPrice(cap);
+      msgEl.className = 'text-sm text-emerald-400';
+    }
+    
+    document.addEventListener('DOMContentLoaded', loadListing);
+  </script>
+</body>
+</html>

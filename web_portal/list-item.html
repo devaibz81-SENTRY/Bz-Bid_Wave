@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>List Item - BidWave</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .font-syne { font-family: 'Syne', sans-serif; }
+    .glass-panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+    .gold-text { color: #f59e0b; }
+    .btn-gold { background: #f59e0b; color: #000; font-weight: 800; padding: 12px 24px; border-radius: 8px; }
+    .input-primary { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #374151; background: rgba(0,0,0,0.3); color: #fff; }
+    .input-primary:focus { outline: none; border-color: #f59e0b; }
+    .sale-type-btn { padding: 12px 20px; border-radius: 8px; border: 1px solid #374151; background: rgba(0,0,0,0.3); color: #9ca3af; cursor: pointer; transition: all 0.2s; text-align: center; }
+    .sale-type-btn:hover { border-color: #f59e0b; }
+    .sale-type-btn.active { border-color: #f59e0b; background: rgba(245,158,11,0.1); color: #f59e0b; }
+    .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; font-weight: 700; margin-bottom: 12px; }
+  </style>
+</head>
+<body class="bg-[#09090b] text-white min-h-screen">
+  <script src="/js/auth.js"></script>
+  <script>
+    if (!isLoggedIn()) {
+      window.location.href = '/login.html';
+    }
+  </script>
+
+  <!-- Navigation -->
+  <nav class="glass-panel py-3 px-6">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <a href="/dashboard.html" class="font-syne text-xl font-black flex items-center gap-2">
+        BID<span class="gold-text">WAVE</span> 🇧🇿
+      </a>
+      <div class="flex items-center gap-4">
+        <a href="/dashboard.html" class="text-sm text-slate-400 hover:text-white">Dashboard</a>
+        <a href="/profile.html" class="w-8 h-8 rounded-full bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center text-yellow-500 font-bold text-xs user-avatar">
+          BZ
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-3xl mx-auto px-6 py-12">
+    <div class="flex items-center gap-3 mb-8">
+      <a href="/dashboard.html" class="text-slate-400 hover:text-white">← Back</a>
+      <span class="text-slate-600">|</span>
+      <h1 class="font-syne text-3xl font-black">List New Item</h1>
+    </div>
+
+    <!-- Listing Form -->
+    <div class="glass-panel rounded-xl p-6">
+      <form id="listingForm" class="space-y-6">
+        
+        <!-- Sale Type -->
+        <div>
+          <div class="section-title">Listing Type *</div>
+          <div class="grid grid-cols-3 gap-3">
+            <button type="button" class="sale-type-btn active" data-type="auction" onclick="selectSaleType('auction')">
+              <div class="font-bold text-sm">Auction</div>
+              <div class="text-xs opacity-60">Bid to win</div>
+            </button>
+            <button type="button" class="sale-type-btn" data-type="big_sale" onclick="selectSaleType('big_sale')">
+              <div class="font-bold text-sm">Big Sale</div>
+              <div class="text-xs opacity-60">Fixed price</div>
+            </button>
+            <button type="button" class="sale-type-btn" data-type="trade" onclick="selectSaleType('trade')">
+              <div class="font-bold text-sm">Trade</div>
+              <div class="text-xs opacity-60">Swap items</div>
+            </button>
+          </div>
+          <input type="hidden" id="saleType" value="auction" />
+        </div>
+
+        <!-- Basic Info -->
+        <div>
+          <label class="block text-xs uppercase text-slate-500 font-bold mb-2">Item Title *</label>
+          <input id="itemTitle" type="text" class="input-primary" placeholder="e.g. 2024 Toyota Hilux D4D" required />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs uppercase text-slate-500 font-bold mb-2">Category *</label>
+            <select id="itemCategory" class="input-primary" required>
+              <option value="">Select category</option>
+              <option value="Vehicles">Vehicles</option>
+              <option value="Real Estate">Real Estate</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Art & Antiques">Art & Antiques</option>
+              <option value="Machinery">Machinery</option>
+              <option value="Livestock">Livestock</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs uppercase text-slate-500 font-bold mb-2">District *</label>
+            <select id="itemDistrict" class="input-primary" required>
+              <option value="">Select district</option>
+              <option value="Belize">Belize District</option>
+              <option value="Cayo">Cayo District</option>
+              <option value="Stann Creek">Stann Creek District</option>
+              <option value="Orange Walk">Orange Walk District</option>
+              <option value="Corozal">Corozal District</option>
+              <option value="Toledo">Toledo District</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Pricing -->
+        <div class="grid grid-cols-2 gap-4" id="pricingSection">
+          <div>
+            <label class="block text-xs uppercase text-slate-500 font-bold mb-2">Starting Price (BZD) *</label>
+            <input id="itemPrice" type="number" min="1" step="0.01" class="input-primary" placeholder="1000.00" required />
+          </div>
+          <div id="reservedContainer">
+            <label class="block text-xs uppercase text-slate-500 font-bold mb-2">Reserve Price</label>
+            <input id="itemReserved" type="number" min="0" step="0.01" class="input-primary" placeholder="Minimum to sell" />
+            <p class="text-xs text-slate-500 mt-1">Hidden minimum - item won't sell below</p>
+          </div>
+        </div>
+
+        <!-- Duration -->
+        <div id="durationSection">
+          <div class="section-title">Auction Duration</div>
+          <div class="grid grid-cols-5 gap-2">
+            <button type="button" class="sale-type-btn text-xs" data-days="1" onclick="selectDuration(1)">24 Hours</button>
+            <button type="button" class="sale-type-btn text-xs" data-days="3" onclick="selectDuration(3)">3 Days</button>
+            <button type="button" class="sale-type-btn text-xs active" data-days="5" onclick="selectDuration(5)">5 Days</button>
+            <button type="button" class="sale-type-btn text-xs" data-days="7" onclick="selectDuration(7)">7 Days</button>
+            <button type="button" class="sale-type-btn text-xs" data-days="14" onclick="selectDuration(14)">14 Days</button>
+          </div>
+          <input type="hidden" id="durationDays" value="5" />
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-xs uppercase text-slate-500 font-bold mb-2">Description *</label>
+          <textarea id="itemDescription" rows="4" class="input-primary" placeholder="Describe the item condition, features, history, etc." required></textarea>
+        </div>
+
+        <!-- Image -->
+        <div>
+          <label class="block text-xs uppercase text-slate-500 font-bold mb-2">Image URL</label>
+          <input id="itemImage" type="url" class="input-primary" placeholder="https://example.com/image.jpg" />
+          <p class="text-xs text-slate-500 mt-1">Paste a direct link to your item image</p>
+        </div>
+
+        <!-- Auto-Bid Settings (for buyers) -->
+        <div class="border-t border-slate-800 pt-6">
+          <div class="flex items-center gap-2 mb-4">
+            <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span class="section-title mb-0">Auto-Bid Settings</span>
+          </div>
+          <p class="text-xs text-slate-400 mb-4">Set up automatic bidding. When someone bids, we'll bid for you up to your cap.</p>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs uppercase text-slate-500 font-bold mb-2">Your Bid Cap (BZD)</label>
+              <input id="autoBidCap" type="number" min="1" step="0.01" class="input-primary" placeholder="e.g. 5000.00" />
+            </div>
+            <div>
+              <label class="block text-xs uppercase text-slate-500 font-bold mb-2">Bid Increment (BZD)</label>
+              <select id="autoBidIncrement" class="input-primary">
+                <option value="5">$5 increments</option>
+                <option value="10" selected>$10 increments</option>
+                <option value="25">$25 increments</option>
+                <option value="50">$50 increments</option>
+                <option value="100">$100 increments</option>
+                <option value="500">$500 increments</option>
+                <option value="1000">$1000 increments</option>
+              </select>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">Example: If cap is $500 and increment is $10, you'll bid $100, then $110, then $120... up to $500 max.</p>
+        </div>
+
+        <!-- Submit -->
+        <div class="pt-4 border-t border-slate-800">
+          <button type="submit" class="btn-gold w-full">List Item for Auction</button>
+        </div>
+      </form>
+
+      <div id="submitMsg" class="mt-4 text-center text-sm hidden"></div>
+    </div>
+
+    <!-- Tips -->
+    <div class="mt-8 glass-panel rounded-xl p-6">
+      <h3 class="font-bold text-sm uppercase text-slate-500 mb-3">Listing Tips</h3>
+      <ul class="text-sm text-slate-400 space-y-2">
+        <li>• <strong>Auction:</strong> Buyers compete with bids - highest wins</li>
+        <li>• <strong>Big Sale:</strong> Set a fixed price, first buyer wins</li>
+        <li>• <strong>Trade:</strong> Specify what you're looking to swap for</li>
+        <li>• <strong>Reserve:</strong> Hidden minimum price - item won't sell below</li>
+        <li>• <strong>Auto-Bid:</strong> Set your cap and increment, we bid for you!</li>
+      </ul>
+    </div>
+  </main>
+
+  <script>
+    function selectSaleType(type) {
+      document.querySelectorAll('.sale-type-btn[data-type]').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`.sale-type-btn[data-type="${type}"]`).classList.add('active');
+      document.getElementById('saleType').value = type;
+      
+      // Show/hide relevant fields
+      const pricingSection = document.getElementById('pricingSection');
+      const reservedContainer = document.getElementById('reservedContainer');
+      const durationSection = document.getElementById('durationSection');
+      
+      if (type === 'auction') {
+        pricingSection.style.display = 'grid';
+        reservedContainer.style.display = 'block';
+        durationSection.style.display = 'block';
+      } else if (type === 'big_sale') {
+        pricingSection.style.display = 'grid';
+        reservedContainer.style.display = 'none';
+        durationSection.style.display = 'none';
+      } else {
+        pricingSection.style.display = 'none';
+        durationSection.style.display = 'none';
+      }
+    }
+
+    function selectDuration(days) {
+      document.querySelectorAll('.sale-type-btn[data-days]').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`.sale-type-btn[data-days="${days}"]`).classList.add('active');
+      document.getElementById('durationDays').value = days;
+    }
+
+    document.getElementById('listingForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const saleType = document.getElementById('saleType').value;
+      const title = document.getElementById('itemTitle').value.trim();
+      const category = document.getElementById('itemCategory').value;
+      const district = document.getElementById('itemDistrict').value;
+      const price = parseFloat(document.getElementById('itemPrice').value) || 0;
+      const reserved = parseFloat(document.getElementById('itemReserved').value) || 0;
+      const durationDays = parseInt(document.getElementById('durationDays').value) || 5;
+      const description = document.getElementById('itemDescription').value.trim();
+      const imageUrl = document.getElementById('itemImage').value.trim();
+      
+      // Auto-bid settings
+      const autoBidCap = parseFloat(document.getElementById('autoBidCap').value) || 0;
+      const autoBidIncrement = parseInt(document.getElementById('autoBidIncrement').value) || 10;
+
+      const user = getUser();
+
+      // Calculate end time
+      const endTime = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000).toISOString();
+
+      const listing = {
+        saleType,
+        title,
+        category,
+        district,
+        startingPrice: price,
+        reservedPrice: reserved,
+        description,
+        imageUrl: imageUrl || 'https://images.unsplash.com/photo-1534120247760-c44c3e4a62f1?auto=format&fit=crop&q=80&w=400',
+        endTime,
+        durationDays,
+        autoBid: autoBidCap > 0 ? {
+          enabled: true,
+          cap: autoBidCap,
+          increment: autoBidIncrement,
+          currentBid: price
+        } : { enabled: false },
+        seller: user?.displayName || 'Anonymous',
+        sellerId: user?.displayName || 'anon',
+        bids: [],
+        bidCount: 0,
+        currentBid: price,
+        status: 'active'
+      };
+
+      addListing(listing);
+
+      const msg = document.getElementById('submitMsg');
+      msg.textContent = 'Item listed successfully! Redirecting to dashboard...';
+      msg.className = 'mt-4 text-center text-sm text-emerald-400';
+      msg.classList.remove('hidden');
+      
+      setTimeout(() => {
+        window.location.href = '/dashboard.html';
+      }, 2000);
+    });
+  </script>
+</body>
+</html>
