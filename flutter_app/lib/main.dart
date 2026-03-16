@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 void main() async {
@@ -127,8 +128,55 @@ class StorageService {
   static const String _listingsKey = 'bz_listings';
   static const String _userKey = 'bz_user';
   static const String _sessionKey = 'bz_session';
+  static const String _pendingUploadsKey = 'bz_pending_uploads';
+  
+  // Convex API endpoint - replace with your actual deployment URL
+  static const String _convexUrl = 'https://zealous-orca-596.convex.cloud';
+  
+  // Check if we're online (simple check)
+  static Future<bool> _isOnline() async {
+    try {
+      final result = await http.get(Uri.parse('$_convexUrl/health')).timeout(const Duration(seconds: 5));
+      return result.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
 
+  // Fetch listings from Convex API
+  static Future<List<Listing>> fetchListingsFromApi() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_convexUrl/api/listings/listActive'),
+      ).timeout(const Duration(seconds: 10));
+      
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.map((e) => Listing.fromJson(e)).toList();
+      }
+      throw Exception('Failed to load listings');
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Get listings - tries API first, falls back to cache
   static Future<List<Listing>> getListings() async {
+    final isOnline = await _isOnline();
+    
+    if (isOnline) {
+      try {
+        final listings = await fetchListingsFromApi();
+        // Cache the results for offline use
+        await saveListings(listings);
+        return listings;
+      } catch (e) {
+        // API failed, try cache
+        debugPrint('API fetch failed, using cache: $e');
+      }
+    }
+    
+    // Fallback to cache
     final prefs = await SharedPreferences.getInstance();
     final data = prefs.getString(_listingsKey);
     if (data != null) {
@@ -138,10 +186,71 @@ class StorageService {
     return _getSampleListings();
   }
 
+  // Save listings to cache
   static Future<void> saveListings(List<Listing> listings) async {
     final prefs = await SharedPreferences.getInstance();
     final data = jsonEncode(listings.map((e) => e.toJson()).toList());
     await prefs.setString(_listingsKey, data);
+  }
+
+  // Queue a bid for later sync (offline support)
+  static Future<void> queueBid(Map<String, dynamic> bid) async {
+    final prefs = await SharedPreferences.getInstance();
+    final pending = prefs.getString(_pendingUploadsKey);
+    List<Map<String, dynamic>> uploads = [];
+    if (pending != null) {
+      uploads = List<Map<String, dynamic>>.from(jsonDecode(pending));
+    }
+    uploads.add({
+      ...bid,
+      'queuedAt': DateTime.now().toIso8601String(),
+    });
+    await prefs.setString(_pendingUploadsKey, jsonEncode(uploads));
+  }
+
+  // Sync pending uploads when back online
+  static Future<int> syncPendingUploads() async {
+    final isOnline = await _isOnline();
+    if (!isOnline) return 0;
+    
+    final prefs = await SharedPreferences.getInstance();
+    final pending = prefs.getString(_pendingUploadsKey);
+    if (pending == null) return 0;
+    
+    List<Map<String, dynamic>> uploads = List<Map<String, dynamic>>.from(jsonDecode(pending));
+    if (uploads.isEmpty) return 0;
+    
+    int synced = 0;
+    for (final upload in uploads) {
+      try {
+        await http.post(
+          Uri.parse('$_convexUrl/api/bids/place'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(upload),
+        ).timeout(const Duration(seconds: 10));
+        synced++;
+      } catch (e) {
+        debugPrint('Failed to sync bid: $e');
+      }
+    }
+    
+    // Remove synced items
+    uploads.removeRange(0, synced);
+    if (uploads.isEmpty) {
+      await prefs.remove(_pendingUploadsKey);
+    } else {
+      await prefs.setString(_pendingUploadsKey, jsonEncode(uploads));
+    }
+    
+    return synced;
+  }
+
+  // Check if there are pending uploads
+  static Future<int> getPendingUploadsCount() async {
+    final prefs = await SharedPreferences.getInstance();
+    final pending = prefs.getString(_pendingUploadsKey);
+    if (pending == null) return 0;
+    return List<Map<String, dynamic>>.from(jsonDecode(pending)).length;
   }
 
   static List<Listing> _getSampleListings() {
@@ -367,23 +476,124 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   List<Listing> _listings = [];
   bool _isLoading = true;
+  bool _isRefreshing = false;
+  String? _error;
   String _selectedDistrict = '';
+  int _pendingSyncs = 0;
 
   @override
   void initState() {
     super.initState();
     _fetchListings();
+    _checkPendingSyncs();
+  }
+
+  Future<void> _checkPendingSyncs() async {
+    final count = await StorageService.getPendingUploadsCount();
+    if (mounted) setState(() => _pendingSyncs = count);
+  }
+
+  Future<void> _syncPending() async {
+    final synced = await StorageService.syncPendingUploads();
+    if (synced > 0 && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Synced $synced pending bids'), backgroundColor: const Color(0xFF22C55E)),
+      );
+      await _fetchListings();
+    }
+    await _checkPendingSyncs();
   }
 
   Future<void> _fetchListings() async {
-    setState(() => _isLoading = true);
-    final listings = await StorageService.getListings();
-    if (mounted) {
-      setState(() {
-        _listings = listings;
-        _isLoading = false;
-      });
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    
+    try {
+      final listings = await StorageService.getListings();
+      if (mounted) {
+        setState(() {
+          _listings = listings;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _isLoading = false;
+        });
+      }
     }
+  }
+
+  Future<void> _refreshListings() async {
+    setState(() => _isRefreshing = true);
+    await _fetchListings();
+    if (mounted) setState(() => _isRefreshing = false);
+  }
+
+  Widget _buildErrorWidget() {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF151C2C),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.red.withOpacity(0.3)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.error_outline, color: Colors.red, size: 48),
+          const SizedBox(height: 12),
+          const Text('Failed to load listings', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          const SizedBox(height: 8),
+          Text(_error ?? 'Unknown error', style: const TextStyle(color: Colors.white38, fontSize: 12), textAlign: TextAlign.center),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton.icon(
+                onPressed: _fetchListings,
+                icon: const Icon(Icons.refresh, color: Color(0xFFEAB308)),
+                label: const Text('Retry', style: TextStyle(color: Color(0xFFEAB308))),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Text('Pull down to refresh', style: TextStyle(color: Colors.white24, fontSize: 11)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOfflineBanner() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: const Color(0xFFF59E0B).withOpacity(0.2),
+      child: Row(
+        children: [
+          const Icon(Icons.cloud_off, color: Color(0xFFF59E0B), size: 16),
+          const SizedBox(width: 8),
+          const Expanded(child: Text('Offline - showing cached data', style: TextStyle(color: Color(0xFFF59E0B), fontSize: 12))),
+          if (_pendingSyncs > 0)
+            GestureDetector(
+              onTap: _syncPending,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEAB308),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text('Sync $_pendingSyncs', style: const TextStyle(color: Colors.black, fontSize: 11, fontWeight: FontWeight.bold)),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 
   String _formatPrice(double price) {
@@ -443,32 +653,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return MainScaffold(
       child: Stack(
         children: [
-          CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 40),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'BZ BIDWAVE',
-                                style: GoogleFonts.syne(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w900,
-                                  color: const Color(0xFFEAB308),
+          RefreshIndicator(
+            onRefresh: _refreshListings,
+            color: const Color(0xFFEAB308),
+            backgroundColor: const Color(0xFF151C2C),
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 40),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'BZ BIDWAVE',
+                                  style: GoogleFonts.syne(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w900,
+                                    color: const Color(0xFFEAB308),
+                                  ),
                                 ),
-                              ),
-                              const Text('100% Belizean Marketplace', style: TextStyle(color: Colors.white38, fontSize: 12)),
-                            ],
-                          ),
+                                const Text('100% Belizean Marketplace', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                              ],
+                            ),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                             decoration: BoxDecoration(
@@ -568,6 +782,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               if (_isLoading)
                 const SliverToBoxAdapter(
                   child: Center(child: CircularProgressIndicator(color: Color(0xFFEAB308))),
+                )
+              else if (_error != null)
+                SliverToBoxAdapter(
+                  child: _buildErrorWidget(),
                 )
               else if (_filteredListings.isEmpty)
                 const SliverToBoxAdapter(
