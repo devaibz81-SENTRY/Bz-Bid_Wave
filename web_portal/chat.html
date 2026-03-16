@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room - BidWave</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        .font-syne { font-family: 'Syne', sans-serif; }
+        .glass-panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+        .gold-text { color: #f59e0b; }
+        .btn-gold { background: #f59e0b; color: #000; font-weight: 800; padding: 8px 16px; border-radius: 6px; }
+        .btn-gold:hover { filter: brightness(1.1); }
+        .btn-outline { border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #fff; padding: 8px 16px; border-radius: 6px; }
+        .btn-danger { background: #ef4444; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        .bg-marble { background-color: #09090b; background-image: radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(245, 158, 11, 0.05) 0%, transparent 50%), url("https://www.transparenttextures.com/patterns/carbon-fibre.png"); background-attachment: fixed; }
+        .chat-own { margin-left: auto; background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.3); }
+        .chat-other { margin-right: auto; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+        .chat-bid { margin-left: auto; background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.3); }
+        .msg-pinned { border: 1px solid #f59e0b; background: rgba(245, 158, 11, 0.1); }
+    </style>
+</head>
+<body class="antialiased bg-marble text-white min-h-screen">
+    <script src="/js/auth.js"></script>
+    <script>
+        if (!isLoggedIn()) {
+            window.location.href = '/login.html';
+        }
+    </script>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-panel py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between px-6">
+            <a href="/dashboard-v2.html" class="font-syne text-xl font-black flex items-center gap-2">
+                BID<span class="gold-text">WAVE</span> 🇧🇿
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="/dashboard-v2.html" class="text-sm text-slate-400 hover:text-white">Dashboard</a>
+                <a href="/news.html" class="text-sm text-slate-400 hover:text-white">News</a>
+                <a href="/chat.html" class="text-sm font-bold gold-text">Chat</a>
+                <a href="/profile.html" class="w-8 h-8 rounded-full bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center text-yellow-500 font-bold text-xs user-avatar">BZ</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 pt-24 pb-6">
+        <div class="grid lg:grid-cols-5 gap-6 h-[calc(100vh-140px)]">
+            <!-- Chat Rooms Sidebar -->
+            <div class="lg:col-span-1 glass-panel rounded-xl overflow-hidden flex flex-col">
+                <div class="p-4 border-b border-white/10">
+                    <h2 class="font-syne font-black uppercase text-lg">Chat Rooms</h2>
+                </div>
+                <div class="p-2 flex-1 overflow-y-auto">
+                    <div class="text-xs text-slate-500 uppercase font-bold mb-2 px-2">General</div>
+                    <button onclick="switchRoom('global')" class="room-btn w-full text-left p-3 rounded-lg mb-1 bg-yellow-500/20 border border-yellow-500/30">
+                        <div class="font-bold text-sm">🌍 Global</div>
+                    </button>
+                    <button onclick="switchRoom('deals')" class="room-btn w-full text-left p-3 rounded-lg mb-1 hover:bg-white/5">
+                        <div class="font-bold text-sm">💰 Deals</div>
+                    </button>
+                    <button onclick="switchRoom('help')" class="room-btn w-full text-left p-3 rounded-lg mb-1 hover:bg-white/5">
+                        <div class="font-bold text-sm">❓ Help</div>
+                    </button>
+                    
+                    <div class="text-xs text-slate-500 uppercase font-bold mb-2 px-2 mt-4">Bid Rooms</div>
+                    <div id="bidRoomsList"></div>
+                </div>
+                
+                <div class="p-4 border-t border-white/10">
+                    <button onclick="showCreateBidRoom()" class="btn-outline w-full text-sm">+ Create Bid Room</button>
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="lg:col-span-3 glass-panel rounded-xl flex flex-col overflow-hidden">
+                <!-- Room Header -->
+                <div class="p-4 border-b border-white/10 flex justify-between items-center">
+                    <div>
+                        <h3 id="roomTitle" class="font-syne font-black text-lg">🌍 Global</h3>
+                        <div id="roomDesc" class="text-sm text-slate-400">Chat with bidders</div>
+                    </div>
+                    <div id="adminControls" class="hidden">
+                        <button onclick="clearChat()" class="btn-outline text-xs">Clear</button>
+                    </div>
+                </div>
+
+                <!-- Pinned Message -->
+                <div id="pinnedMsg" class="hidden px-4 py-2 bg-yellow-500/10 border-b border-yellow-500/20">
+                    <span class="text-xs text-yellow-500 font-bold">📌 Pinned:</span>
+                    <span id="pinnedText" class="text-sm text-white"></span>
+                </div>
+
+                <!-- Messages -->
+                <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+
+                <!-- Quick Bid Panel -->
+                <div id="quickBidPanel" class="hidden px-4 py-3 border-t border-white/10 bg-slate-900/50">
+                    <div class="flex gap-2 items-center">
+                        <span class="text-sm text-slate-400">Quick Bid:</span>
+                        <input id="quickBidAmount" type="number" placeholder="Amount" class="bg-black/30 border border-white/10 rounded px-3 py-1 text-white text-sm w-24" />
+                        <button onclick="sendQuickBid()" class="btn-gold text-sm">Place Bid</button>
+                    </div>
+                </div>
+
+                <!-- Input -->
+                <div class="p-4 border-t border-white/10">
+                    <form id="chatForm" class="flex gap-3">
+                        <input id="chatInput" type="text" class="flex-1 bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500" placeholder="Type message or /bid 500..." autocomplete="off" />
+                        <button type="submit" class="btn-gold px-6">Send</button>
+                    </form>
+                    <div class="text-xs text-slate-500 mt-2">💡 Tip: Type /bid [amount] to place a bid</div>
+                </div>
+            </div>
+
+            <!-- Bid Panel -->
+            <div class="lg:col-span-1 glass-panel rounded-xl p-4 overflow-y-auto">
+                <h4 class="font-bold text-sm uppercase text-slate-500 mb-3">💰 Active Bids</h4>
+                <div id="activeBidsList" class="space-y-3"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Bid Room Modal -->
+    <div id="createBidRoomModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+        <div class="glass-panel rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="font-syne font-black text-xl mb-4">Create Bid Room</h3>
+            <select id="bidRoomListing" class="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white mb-4">
+                <option value="">Select a listing...</option>
+            </select>
+            <div class="flex gap-2">
+                <button onclick="createBidRoom()" class="btn-gold flex-1">Create</button>
+                <button onclick="closeCreateBidRoom()" class="btn-outline flex-1">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CHAT_KEY = 'bz_chat_messages';
+        const ADMINS_KEY = 'bz_chat_admins';
+        const PINNED_KEY = 'bz_chat_pinned';
+        const BANNED_KEY = 'bz_chat_banned';
+        let currentRoom = 'global';
+
+        const rooms = {
+            global: { title: '🌍 Global', desc: 'Chat with all Belize bidders' },
+            deals: { title: '💰 Deals & Bids', desc: 'Discuss hot auctions' },
+            help: { title: '❓ Help & Support', desc: 'Get your questions answered' }
+        };
+
+        function getUser() {
+            return JSON.parse(localStorage.getItem('bz_user') || null) || {};
+        }
+
+        function getAdmins() {
+            return JSON.parse(localStorage.getItem(ADMINS_KEY) || '["Admin"]');
+        }
+
+        function isAdmin() {
+            const user = getUser();
+            const admins = getAdmins();
+            return admins.includes(user.displayName);
+        }
+
+        function getMessages() {
+            const data = localStorage.getItem(CHAT_KEY);
+            return data ? JSON.parse(data) : {};
+        }
+
+        function saveMessages(messages) {
+            localStorage.setItem(CHAT_KEY, JSON.stringify(messages));
+        }
+
+        function getPinned() {
+            return JSON.parse(localStorage.getItem(PINNED_KEY) || '{}');
+        }
+
+        function savePinned(pinned) {
+            localStorage.setItem(PINNED_KEY, JSON.stringify(pinned));
+        }
+
+        function getBanned() {
+            return JSON.parse(localStorage.getItem(BANNED_KEY) || '{}');
+        }
+
+        function saveBanned(banned) {
+            localStorage.setItem(BANNED_KEY, JSON.stringify(banned));
+        }
+
+        function getChatMessages() {
+            const messages = getMessages();
+            return messages[currentRoom] || [];
+        }
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('en-BZ', { style: 'currency', currency: 'BZD', maximumFractionDigits: 0 }).format(price);
+        }
+
+        function addMessage(text, isBid = false) {
+            const user = getUser();
+            const banned = getBanned();
+            
+            if (banned[currentRoom] && banned[currentRoom].includes(user.displayName)) {
+                alert('You are banned from this room');
+                return;
+            }
+            
+            const messages = getMessages();
+            if (!messages[currentRoom]) messages[currentRoom] = [];
+            
+            const newMessage = {
+                id: Date.now(),
+                user: user.displayName || 'Anonymous',
+                text: text.trim(),
+                time: Date.now(),
+                room: currentRoom,
+                isBid: isBid,
+                type: isBid ? 'bid' : 'message'
+            };
+            
+            messages[currentRoom].push(newMessage);
+            if (messages[currentRoom].length > 100) {
+                messages[currentRoom] = messages[currentRoom].slice(-100);
+            }
+            
+            saveMessages(messages);
+            renderMessages();
+            renderActiveBids();
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('en-BZ', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('chatMessages');
+            const messages = getChatMessages();
+            const user = getUser();
+            const admins = getAdmins();
+            const pinned = getPinned();
+            
+            if (messages.length === 0) {
+                container.innerHTML = '<div class="text-center text-slate-500 py-8"><div class="text-4xl mb-2">💬</div><div>No messages yet. Start the conversation!</div></div>';
+                return;
+            }
+            
+            container.innerHTML = messages.map(msg => {
+                const isOwn = msg.user === (user.displayName || 'Anonymous');
+                const isAdminUser = admins.includes(msg.user);
+                const isPinned = pinned[currentRoom] === msg.id;
+                
+                let msgClass = 'chat-other';
+                if (isOwn) msgClass = 'chat-own';
+                if (msg.isBid) msgClass = 'chat-bid';
+                if (isPinned) msgClass += ' msg-pinned';
+                
+                let adminButtons = '';
+                if (isAdmin() && !isOwn) {
+                    adminButtons = `
+                        <div class="flex gap-1 mt-1">
+                            <button onclick="deleteMessage(${msg.id})" class="text-xs text-red-400 hover:text-red-300">Delete</button>
+                            <button onclick="pinMessage(${msg.id})" class="text-xs text-yellow-500 hover:text-yellow-400">Pin</button>
+                            <button onclick="kickUser('${msg.user}')" class="text-xs text-red-400 hover:text-red-300">Kick</button>
+                        </div>
+                    `;
+                }
+                
+                let badge = '';
+                if (msg.isBid) badge = '<span class="text-xs bg-green-500/20 text-green-400 px-1 rounded ml-2">💰 BID</span>';
+                else if (isAdminUser) badge = '<span class="text-xs bg-yellow-500/20 text-yellow-400 px-1 rounded ml-2">ADMIN</span>';
+                
+                return `
+                    <div class="${msgClass} p-3 rounded-lg border">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-sm ${isOwn ? 'text-yellow-500' : 'text-yellow-400'}">${msg.user}${badge}</span>
+                            <span class="text-xs text-slate-500">${formatTime(msg.time)}</span>
+                        </div>
+                        <div class="text-sm">${escapeHtml(msg.text)}</div>
+                        ${adminButtons}
+                    </div>
+                `;
+            }).join('');
+            
+            container.scrollTop = container.scrollHeight;
+            
+            // Show pinned message
+            const pinnedMsg = document.getElementById('pinnedMsg');
+            if (pinned[currentRoom]) {
+                const msg = messages.find(m => m.id === pinned[currentRoom]);
+                if (msg) {
+                    pinnedMsg.classList.remove('hidden');
+                    document.getElementById('pinnedText').textContent = msg.text;
+                }
+            } else {
+                pinnedMsg.classList.add('hidden');
+            }
+        }
+
+        function deleteMessage(msgId) {
+            const messages = getMessages();
+            messages[currentRoom] = messages[currentRoom].filter(m => m.id !== msgId);
+            saveMessages(messages);
+            renderMessages();
+        }
+
+        function pinMessage(msgId) {
+            const pinned = getPinned();
+            pinned[currentRoom] = pinned[currentRoom] === msgId ? null : msgId;
+            savePinned(pinned);
+            renderMessages();
+        }
+
+        function kickUser(username) {
+            if (!confirm(`Kick ${username} from this room?`)) return;
+            const banned = getBanned();
+            if (!banned[currentRoom]) banned[currentRoom] = [];
+            banned[currentRoom].push(username);
+            saveBanned(banned);
+            alert(`${username} has been kicked from the room`);
+        }
+
+        function switchRoom(room) {
+            currentRoom = room;
+            document.getElementById('roomTitle').textContent = rooms[room]?.title || '💰 ' + room;
+            document.getElementById('roomDesc').textContent = rooms[room]?.desc || 'Bid room for ' + room;
+            
+            document.querySelectorAll('.room-btn').forEach(btn => {
+                btn.classList.remove('bg-yellow-500/20', 'border-yellow-500/30');
+                btn.classList.add('hover:bg-white/5');
+            });
+            event.target.closest('.room-btn').classList.add('bg-yellow-500/20', 'border-yellow-500/30');
+            event.target.closest('.room-btn').classList.remove('hover:bg-white/5');
+            
+            // Show admin controls for admins
+            if (isAdmin()) {
+                document.getElementById('adminControls').classList.remove('hidden');
+            } else {
+                document.getElementById('adminControls').classList.add('hidden');
+            }
+            
+            // Show quick bid for bid rooms
+            if (room.startsWith('bid_')) {
+                document.getElementById('quickBidPanel').classList.remove('hidden');
+            } else {
+                document.getElementById('quickBidPanel').classList.add('hidden');
+            }
+            
+            renderMessages();
+            renderActiveBids();
+            loadBidRooms();
+        }
+
+        function clearChat() {
+            if (confirm('Clear all messages in this chat room?')) {
+                const messages = getMessages();
+                messages[currentRoom] = [];
+                saveMessages(messages);
+                renderMessages();
+            }
+        }
+
+        function renderActiveBids() {
+            const container = document.getElementById('activeBidsList');
+            const messages = getMessages();
+            
+            // Get all bid rooms
+            const bidRooms = Object.keys(messages).filter(k => k.startsWith('bid_'));
+            
+            if (bidRooms.length === 0) {
+                container.innerHTML = '<div class="text-sm text-slate-500">No active bid rooms</div>';
+                return;
+            }
+            
+            let html = '';
+            bidRooms.slice(0, 10).forEach(room => {
+                const bids = messages[room].filter(m => m.isBid);
+                if (bids.length > 0) {
+                    const lastBid = bids[bids.length - 1];
+                    const listingName = room.replace('bid_', '');
+                    html += `
+                        <div class="glass-panel p-3 rounded-lg cursor-pointer hover:bg-white/5" onclick="switchRoom('${room}')">
+                            <div class="text-sm font-bold truncate">${listingName}</div>
+                            <div class="text-lg font-black gold-text">${formatPrice(lastBid.amount)}</div>
+                            <div class="text-xs text-slate-500">${lastBid.user}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            container.innerHTML = html || '<div class="text-sm text-slate-500">No bids yet</div>';
+        }
+
+        function loadBidRooms() {
+            const container = document.getElementById('bidRoomsList');
+            const messages = getMessages();
+            const bidRooms = Object.keys(messages).filter(k => k.startsWith('bid_'));
+            
+            if (bidRooms.length === 0) {
+                container.innerHTML = '<div class="text-xs text-slate-500 px-2">No bid rooms yet</div>';
+                return;
+            }
+            
+            container.innerHTML = bidRooms.map(room => {
+                const name = room.replace('bid_', '').substring(0, 20);
+                return `
+                    <button onclick="switchRoom('${room}')" class="room-btn w-full text-left p-2 rounded-lg mb-1 hover:bg-white/5 text-sm">
+                        💰 ${name}...
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function showCreateBidRoom() {
+            const listings = JSON.parse(localStorage.getItem('bz_listings') || '[]');
+            const select = document.getElementById('bidRoomListing');
+            select.innerHTML = '<option value="">Select a listing...</option>' + 
+                listings.map(l => `<option value="${l.id}">${l.title}</option>`).join('');
+            document.getElementById('createBidRoomModal').classList.remove('hidden');
+        }
+
+        function closeCreateBidRoom() {
+            document.getElementById('createBidRoomModal').classList.add('hidden');
+        }
+
+        function createBidRoom() {
+            const listingId = document.getElementById('bidRoomListing').value;
+            if (!listingId) {
+                alert('Please select a listing');
+                return;
+            }
+            
+            const listings = JSON.parse(localStorage.getItem('bz_listings') || '[]');
+            const listing = listings.find(l => l.id === listingId);
+            if (!listing) return;
+            
+            currentRoom = 'bid_' + listingId;
+            closeCreateBidRoom();
+            switchRoom(currentRoom);
+        }
+
+        function handleChatCommand(text) {
+            // Check for /bid command
+            const bidMatch = text.match(/^\/bid\s+(\d+)$/i);
+            if (bidMatch) {
+                const amount = parseInt(bidMatch[1]);
+                const listings = JSON.parse(localStorage.getItem('bz_listings') || '[]');
+                
+                // Find active auction
+                const auction = listings.find(l => l.saleType === 'auction' && l.status === 'active');
+                if (!auction) {
+                    alert('No active auction found');
+                    return;
+                }
+                
+                if (amount <= auction.currentBid) {
+                    alert('Bid must be higher than current: ' + formatPrice(auction.currentBid));
+                    return;
+                }
+                
+                const user = getUser();
+                auction.bids = auction.bids || [];
+                auction.bids.push({
+                    bidder: user.displayName || 'Anonymous',
+                    amount: amount,
+                    time: Date.now()
+                });
+                auction.currentBid = amount;
+                auction.bidCount = (auction.bidCount || 0) + 1;
+                
+                localStorage.setItem('bz_listings', JSON.stringify(listings));
+                
+                // Add bid message to chat
+                addMessage(`💰 Placed bid of ${formatPrice(amount)} on "${auction.title}"`, true);
+                return true;
+            }
+            
+            return false;
+        }
+
+        function sendQuickBid() {
+            const amount = parseInt(document.getElementById('quickBidAmount').value);
+            if (!amount) return;
+            
+            const listingId = currentRoom.replace('bid_', '');
+            const listings = JSON.parse(localStorage.getItem('bz_listings') || '[]');
+            const listing = listings.find(l => l.id === listingId);
+            
+            if (!listing) return;
+            
+            if (amount <= listing.currentBid) {
+                alert('Bid must be higher than current: ' + formatPrice(listing.currentBid));
+                return;
+            }
+            
+            const user = getUser();
+            listing.bids = listing.bids || [];
+            listing.bids.push({
+                bidder: user.displayName || 'Anonymous',
+                amount: amount,
+                time: Date.now()
+            });
+            listing.currentBid = amount;
+            listing.bidCount = (listing.bidCount || 0) + 1;
+            
+            localStorage.setItem('bz_listings', JSON.stringify(listings));
+            
+            addMessage(`💰 Bid placed: ${formatPrice(amount)}`, true);
+            document.getElementById('quickBidAmount').value = '';
+        }
+
+        // Send message
+        document.getElementById('chatForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (text) {
+                if (!handleChatCommand(text)) {
+                    addMessage(text);
+                }
+                input.value = '';
+            }
+        });
+
+        // Load
+        document.addEventListener('DOMContentLoaded', function() {
+            renderMessages();
+            loadBidRooms();
+            renderActiveBids();
+            if (isAdmin()) {
+                document.getElementById('adminControls').classList.remove('hidden');
+            }
+            setInterval(() => {
+                renderMessages();
+                renderActiveBids();
+            }, 10000);
+        });
+    </script>
+</body>
+</html>

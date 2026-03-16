@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile - BidWave</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .font-syne { font-family: 'Syne', sans-serif; }
+    .glass-panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+    .gold-text { color: #f59e0b; }
+    .btn-gold { background: #f59e0b; color: #000; font-weight: 800; padding: 12px 24px; border-radius: 8px; }
+    .input-primary { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #374151; background: rgba(0,0,0,0.3); color: #fff; }
+  </style>
+</head>
+<body class="bg-[#09090b] text-white min-h-screen">
+  <script src="/js/auth.js"></script>
+  <script>
+    if (!isLoggedIn()) {
+      window.location.href = '/login.html';
+    }
+  </script>
+
+  <!-- Navigation -->
+  <nav class="glass-panel py-3 px-6">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <a href="/dashboard-v2.html" class="font-syne text-xl font-black flex items-center gap-2">
+        BID<span class="gold-text">WAVE</span> 🇧🇿
+      </a>
+      <div class="flex items-center gap-4">
+        <a href="/dashboard-v2.html" class="text-sm text-slate-400 hover:text-white">Dashboard</a>
+        <a href="/profile.html" class="w-8 h-8 rounded-full bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center text-yellow-500 font-bold text-xs user-avatar">
+          BZ
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-2xl mx-auto px-6 py-12">
+    <h1 class="font-syne text-3xl font-black mb-2">Your Profile</h1>
+    <p class="text-slate-400 text-sm mb-8">Manage your account details and preferences.</p>
+
+    <!-- Profile Card -->
+    <div class="glass-panel rounded-xl p-6 mb-6">
+      <div class="flex items-center gap-4 mb-6">
+        <div class="w-16 h-16 rounded-full bg-yellow-500/20 border-2 border-yellow-500/30 flex items-center justify-center text-yellow-500 font-bold text-xl" id="avatarDisplay">
+          U
+        </div>
+        <div>
+          <div class="font-bold text-lg" id="displayNameView">Display Name</div>
+          <div class="text-sm text-slate-400" id="memberSince">Member since: -</div>
+        </div>
+      </div>
+
+      <form id="profileForm" class="space-y-4">
+        <div>
+          <label class="block text-xs uppercase text-slate-500 font-bold mb-2">Display Name</label>
+          <input id="editName" type="text" class="input-primary" placeholder="Your display name" />
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase text-slate-500 font-bold mb-2">Phone Number</label>
+          <input id="editPhone" type="tel" class="input-primary" placeholder="+501 123-4567" />
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase text-slate-500 font-bold mb-2">District</label>
+          <select id="editDistrict" class="input-primary">
+            <option value="">Select your district</option>
+            <option value="Belize">Belize District</option>
+            <option value="Cayo">Cayo District</option>
+            <option value="Stann Creek">Stann Creek District</option>
+            <option value="Orange Walk">Orange Walk District</option>
+            <option value="Corozal">Corozal District</option>
+            <option value="Toledo">Toledo District</option>
+            <option value="Stann Creek">Stann Creek District</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase text-slate-500 font-bold mb-2">Bio</label>
+          <textarea id="editBio" rows="3" class="input-primary" placeholder="Tell us about yourself..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-gold w-full">Save Profile</button>
+      </form>
+
+      <div id="saveMsg" class="mt-4 text-center text-sm hidden"></div>
+    </div>
+
+    <!-- Logout Button -->
+    <button onclick="logout()" class="w-full py-3 text-center text-red-400 hover:text-red-300 text-sm font-medium">
+      Sign Out
+    </button>
+  </main>
+
+  <script>
+    const PROFILE_KEY = 'bz_profile';
+
+    function loadProfile() {
+      const user = getUser();
+      const session = getSession();
+      const profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
+
+      if (user) {
+        document.getElementById('displayNameView').textContent = user.displayName || 'User';
+        document.getElementById('avatarDisplay').textContent = (user.displayName || 'U').slice(0, 2).toUpperCase();
+        document.getElementById('editName').value = user.displayName || '';
+        
+        if (user.createdAt) {
+          const date = new Date(user.createdAt);
+          document.getElementById('memberSince').textContent = 'Member since: ' + date.toLocaleDateString('en-BZ', { month: 'short', year: 'numeric' });
+        }
+      }
+
+      document.getElementById('editPhone').value = profile.phone || '';
+      document.getElementById('editDistrict').value = profile.district || '';
+      document.getElementById('editBio').value = profile.bio || '';
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('editName').value.trim();
+      const phone = document.getElementById('editPhone').value.trim();
+      const district = document.getElementById('editDistrict').value;
+      const bio = document.getElementById('editBio').value.trim();
+
+      // Update user display name
+      const user = getUser();
+      if (user && name) {
+        user.displayName = name;
+        localStorage.setItem('bz_user', JSON.stringify(user));
+      }
+
+      // Save profile
+      const profile = { phone, district, bio, updatedAt: Date.now() };
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+
+      // Update UI
+      document.getElementById('displayNameView').textContent = name || 'User';
+      document.getElementById('avatarDisplay').textContent = (name || 'U').slice(0, 2).toUpperCase();
+      
+      const msg = document.getElementById('saveMsg');
+      msg.textContent = 'Profile saved!';
+      msg.className = 'mt-4 text-center text-sm text-emerald-400';
+      msg.classList.remove('hidden');
+      
+      setTimeout(() => msg.classList.add('hidden'), 3000);
+    });
+
+    document.addEventListener('DOMContentLoaded', loadProfile);
+  </script>
+</body>
+</html>

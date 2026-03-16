@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - BidWave</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        .font-syne { font-family: 'Syne', sans-serif; }
+        .glass-panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+        .glass-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s ease; }
+        .glass-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
+        .gold-text { color: #f59e0b; }
+        .btn-gold { background: #f59e0b; color: #000; font-weight: 800; padding: 12px 24px; border-radius: 8px; }
+        .btn-gold:hover { filter: brightness(1.1); }
+        .btn-outline { border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #fff; padding: 12px 24px; border-radius: 8px; }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); }
+        .bg-marble { background-color: #09090b; background-image: radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(245, 158, 11, 0.05) 0%, transparent 50%), url("https://www.transparenttextures.com/patterns/carbon-fibre.png"); background-attachment: fixed; }
+        .input-primary { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #374151; background: rgba(0,0,0,0.3); color: #fff; }
+        .input-primary:focus { outline: none; border-color: #f59e0b; }
+    </style>
+</head>
+<body class="antialiased bg-marble text-white min-h-screen">
+    <script src="/js/auth.js"></script>
+    <script>
+        if (!isLoggedIn()) {
+            window.location.href = '/login.html';
+        }
+    </script>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-panel py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between px-6">
+            <a href="/dashboard-v2.html" class="font-syne text-2xl font-black flex items-center gap-2">
+                BID<span class="gold-text">WAVE</span> 🇧🇿
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8 auth-links">
+                <a href="/" class="text-sm font-medium text-slate-400 hover:text-white">Home</a>
+                <a href="/dashboard-v2.html" class="text-sm font-medium gold-text hover:text-yellow-400">Dashboard</a>
+                <a href="/news.html" class="text-sm font-medium text-slate-400 hover:text-white">News</a>
+                <a href="/chat.html" class="text-sm font-medium text-slate-400 hover:text-white">Chat</a>
+                <a href="/download.html" class="text-sm font-medium text-slate-400 hover:text-white">App</a>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <a href="/profile.html" class="w-8 h-8 rounded-full bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center text-yellow-500 font-bold text-xs user-avatar hover:ring-2 hover:ring-yellow-400">BZ</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Dashboard Content -->
+    <main class="max-w-7xl mx-auto px-6 pt-24 pb-12">
+        <!-- Belize Flag Banner -->
+        <div class="h-1 bg-gradient-to-r from-blue-700 via-white to-red-600 mb-8 rounded"></div>
+        
+        <!-- Main Content -->
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar -->
+            <aside class="w-full lg:w-80 flex-shrink-0">
+                <div class="glass-panel rounded-xl p-6 mb-6">
+                    <div class="text-xs uppercase font-black tracking-widest text-slate-500 mb-4">Market Overview</div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="glass-card p-4 rounded-lg">
+                            <div class="text-2xl font-black font-syne" id="activeCount">0</div>
+                            <div class="text-[10px] uppercase text-slate-500 font-bold">Active</div>
+                        </div>
+                        <div class="glass-card p-4 rounded-lg">
+                            <div class="text-2xl font-black font-syne" id="biddersCount">0</div>
+                            <div class="text-[10px] uppercase text-slate-500 font-bold">Bidders</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass-panel rounded-xl p-6 mb-6">
+                    <div class="text-xs uppercase font-black tracking-widest text-slate-500 mb-4">Quick Actions</div>
+                    <div class="space-y-2">
+                        <a href="/list-item.html" class="block btn-gold text-center text-sm">+ List Item</a>
+                        <a href="/chat.html" class="block btn-outline text-center text-sm">💬 Chat Room</a>
+                    </div>
+                </div>
+                
+                <div class="glass-panel rounded-xl p-6">
+                    <div class="text-xs uppercase font-black tracking-widest text-slate-500 mb-4">Live Activity</div>
+                    <div id="liveActivity" class="space-y-3"></div>
+                </div>
+            </aside>
+            
+            <!-- Main Listings -->
+            <main class="flex-1">
+                <!-- Top Stats -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div class="glass-panel p-4 rounded-xl border-l-2 border-l-yellow-500/30">
+                        <div class="text-[10px] uppercase font-bold text-slate-500">Highest Bid</div>
+                        <div class="text-2xl font-black gold-text" id="highestBid">$0</div>
+                    </div>
+                    <div class="glass-panel p-4 rounded-xl border-l-2 border-l-yellow-500/30">
+                        <div class="text-[10px] uppercase font-bold text-slate-500">Total Bids</div>
+                        <div class="text-2xl font-black gold-text" id="totalBids">0</div>
+                    </div>
+                    <div class="glass-panel p-4 rounded-xl border-l-2 border-l-yellow-500/30">
+                        <div class="text-[10px] uppercase font-bold text-slate-500">Volume</div>
+                        <div class="text-2xl font-black gold-text" id="totalVolume">$0</div>
+                    </div>
+                    <div class="glass-panel p-4 rounded-xl border-l-2 border-l-yellow-500/30">
+                        <div class="text-[10px] uppercase font-bold text-slate-500">Won Today</div>
+                        <div class="text-2xl font-black gold-text" id="wonToday">0</div>
+                    </div>
+                </div>
+                
+                <!-- Featured Auction -->
+                <div id="featuredSection" class="glass-panel rounded-2xl overflow-hidden mb-8">
+                    <!-- Populated by JS -->
+                </div>
+                
+                <!-- Filters -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="font-syne text-2xl font-black uppercase">Marketplace</h2>
+                        <div class="flex gap-2 mt-3" id="districtFilters">
+                            <button onclick="filterByDistrict('')" class="district-btn px-3 py-1 rounded-full text-xs font-bold uppercase bg-yellow-500 text-black">All</button>
+                            <button onclick="filterByDistrict('Belize')" class="district-btn px-3 py-1 rounded-full text-xs font-bold uppercase bg-slate-800 text-slate-400">Belize</button>
+                            <button onclick="filterByDistrict('Cayo')" class="district-btn px-3 py-1 rounded-full text-xs font-bold uppercase bg-slate-800 text-slate-400">Cayo</button>
+                            <button onclick="filterByDistrict('Stann Creek')" class="district-btn px-3 py-1 rounded-full text-xs font-bold uppercase bg-slate-800 text-slate-400">Stann Creek</button>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="sortListings()" class="btn-outline py-2 px-4 text-xs font-bold uppercase">Sort: Newest</button>
+                    </div>
+                </div>
+                
+                <!-- Listings Grid -->
+                <div id="listingsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                
+                <!-- No Listings -->
+                <div id="noListings" class="hidden text-center py-16">
+                    <div class="text-6xl mb-4">📦</div>
+                    <h3 class="font-syne text-xl font-bold mb-2">No listings yet</h3>
+                    <p class="text-slate-400 mb-6">Be the first to list an item!</p>
+                    <a href="/list-item.html" class="btn-gold">List an Item</a>
+                </div>
+            </main>
+        </div>
+    </main>
+
+    <script>
+        let currentDistrict = '';
+        let currentSort = 'newest';
+
+        function getListings() {
+            const listings = localStorage.getItem('bz_listings');
+            if (listings) return JSON.parse(listings);
+            
+            // Seed sample data
+            const samples = [
+                { id: '1', title: '2024 Toyota Hilux D4D', category: 'Vehicles', district: 'Belize', startingPrice: 45000, currentBid: 48500, imageUrl: 'https://images.unsplash.com/photo-1626668893632-6f3a4466d22f?auto=format&fit=crop&q=80&w=400', endTime: new Date(Date.now() + 2*24*60*60*1000).toISOString(), saleType: 'auction', bidCount: 12, bids: [{bidder: 'BZ_Buyer_1', amount: 48500, time: Date.now()-3600000}], status: 'active', seller: 'AutoDealer_BZ' },
+                { id: '2', title: 'Luxury Timepiece Collection', category: 'Art & Antiques', district: 'Cayo', startingPrice: 3500, currentBid: 4350, imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=400', endTime: new Date(Date.now() + 5*24*60*60*1000).toISOString(), saleType: 'auction', bidCount: 8, bids: [], status: 'active', seller: 'LuxuryDealer' },
+                { id: '3', title: 'Beachfront Property - Placencia', category: 'Real Estate', district: 'Stann Creek', startingPrice: 250000, currentBid: 275000, imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=400', endTime: new Date(Date.now() + 7*24*60*60*1000).toISOString(), saleType: 'auction', bidCount: 15, bids: [], status: 'active', seller: 'BZ_Properties' },
+                { id: '4', title: 'MacBook Pro M3 Max', category: 'Electronics', district: 'Belize', startingPrice: 3500, currentBid: 3500, imageUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=400', endTime: new Date(Date.now() + 3*24*60*60*1000).toISOString(), saleType: 'big_sale', bidCount: 0, bids: [], status: 'active', seller: 'TechGuy_BZ' },
+                { id: '5', title: 'Looking to Trade: ATV for Boat', category: 'Trade', district: 'Orange Walk', startingPrice: 0, currentBid: 0, imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=400', endTime: new Date(Date.now() + 14*24*60*60*1000).toISOString(), saleType: 'trade', bidCount: 0, bids: [], status: 'active', seller: 'OutdoorMike' },
+                { id: '6', title: 'Commercial Printer - HP', category: 'Machinery', district: 'Cayo', startingPrice: 800, currentBid: 950, imageUrl: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?auto=format&fit=crop&q=80&w=400', endTime: new Date(Date.now() + 1*24*60*60*1000).toISOString(), saleType: 'auction', bidCount: 4, bids: [], status: 'active', seller: 'OfficePlus' }
+            ];
+            localStorage.setItem('bz_listings', JSON.stringify(samples));
+            return samples;
+        }
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('en-BZ', { style: 'currency', currency: 'BZD', maximumFractionDigits: 0 }).format(price);
+        }
+
+        function getTimeLeft(endTime) {
+            const diff = new Date(endTime) - new Date();
+            if (diff <= 0) return 'Ended';
+            const days = Math.floor(diff / (1000*60*60*24));
+            const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+            if (days > 0) return days + 'd ' + hours + 'h';
+            const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
+            return hours + 'h ' + mins + 'm';
+        }
+
+        function getSaleTypeBadge(type) {
+            if (type === 'auction') return '<span class="bg-yellow-500/20 text-yellow-500 text-[9px] font-bold uppercase px-2 py-1 rounded">Auction</span>';
+            if (type === 'big_sale') return '<span class="bg-blue-500/20 text-blue-500 text-[9px] font-bold uppercase px-2 py-1 rounded">Big Sale</span>';
+            if (type === 'trade') return '<span class="bg-purple-500/20 text-purple-500 text-[9px] font-bold uppercase px-2 py-1 rounded">Trade</span>';
+            return '';
+        }
+
+        function updateStats(listings) {
+            const active = listings.filter(l => l.status === 'active').length;
+            const totalBids = listings.reduce((sum, l) => sum + (l.bidCount || 0), 0);
+            const highestBid = listings.length > 0 ? Math.max(...listings.map(l => l.currentBid || 0)) : 0;
+            const volume = listings.reduce((sum, l) => sum + (l.currentBid || 0), 0);
+            
+            document.getElementById('activeCount').textContent = active;
+            document.getElementById('biddersCount').textContent = Math.floor(totalBids * 1.5);
+            document.getElementById('totalBids').textContent = totalBids;
+            document.getElementById('highestBid').textContent = formatPrice(highestBid);
+            document.getElementById('totalVolume').textContent = formatPrice(volume);
+            document.getElementById('wonToday').textContent = Math.floor(Math.random() * 10) + 1;
+        }
+
+        function renderFeatured(listings) {
+            const featured = listings.find(l => l.saleType === 'auction' && l.status === 'active');
+            const section = document.getElementById('featuredSection');
+            
+            if (!featured) {
+                section.classList.add('hidden');
+                return;
+            }
+            
+            section.classList.remove('hidden');
+            section.innerHTML = `
+                <div class="grid lg:grid-cols-5">
+                    <div class="lg:col-span-2 h-64 lg:h-auto">
+                        <img src="${featured.imageUrl}" alt="${featured.title}" class="w-full h-full object-cover" />
+                    </div>
+                    <div class="lg:col-span-3 p-8 flex flex-col justify-center">
+                        <div class="flex gap-2 mb-4">
+                            <span class="bg-red-500/20 text-red-500 text-xs font-bold uppercase px-2 py-1 rounded">Hot</span>
+                            <span class="bg-emerald-500/20 text-emerald-500 text-xs font-bold uppercase px-2 py-1 rounded">Live</span>
+                            ${getSaleTypeBadge(featured.saleType)}
+                        </div>
+                        <h3 class="font-syne text-3xl font-black uppercase mb-2">${featured.title}</h3>
+                        <p class="text-slate-400 text-sm mb-6 max-w-md">${featured.description || 'Featured auction item. Place your bid now!'}</p>
+                        <div class="flex flex-wrap items-end justify-between gap-4">
+                            <div>
+                                <div class="text-xs uppercase text-slate-500 font-bold">Current Bid</div>
+                                <div class="text-4xl font-black gold-text">${formatPrice(featured.currentBid)}</div>
+                                <div class="text-xs text-slate-500">${featured.bidCount || 0} bids • ${getTimeLeft(featured.endTime)}</div>
+                            </div>
+                            <a href="/listing.html?id=${featured.id}" class="btn-gold px-8 py-3">Place Bid</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderListings(listings) {
+            const grid = document.getElementById('listingsGrid');
+            const noListings = document.getElementById('noListings');
+            
+            if (!listings || listings.length === 0) {
+                grid.innerHTML = '';
+                noListings.classList.remove('hidden');
+                return;
+            }
+            
+            noListings.classList.add('hidden');
+            grid.innerHTML = listings.map(item => `
+                <div class="glass-card rounded-xl overflow-hidden">
+                    <div class="aspect-video relative overflow-hidden cursor-pointer" onclick="window.location.href='/listing.html?id=${item.id}'">
+                        <img src="${item.imageUrl}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <div class="absolute top-3 right-3 bg-black/70 px-2 py-1 rounded text-xs font-bold">${getTimeLeft(item.endTime)}</div>
+                        <div class="absolute top-3 left-3">${getSaleTypeBadge(item.saleType)}</div>
+                    </div>
+                    <div class="p-5">
+                        <div class="text-[10px] uppercase font-bold text-yellow-500 tracking-widest mb-1">${item.category}</div>
+                        <h3 class="font-bold text-lg mb-2 cursor-pointer" onclick="window.location.href='/listing.html?id=${item.id}'">${item.title}</h3>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-[9px] uppercase text-slate-500 font-bold">${item.saleType === 'trade' ? 'Looking For' : 'Current'}</div>
+                                <div class="text-xl font-black gold-text">${item.saleType === 'trade' ? 'Trade' : formatPrice(item.currentBid)}</div>
+                            </div>
+                            ${item.saleType === 'auction' ? `
+                            <button onclick="quickBid('${item.id}')" class="btn-gold text-xs px-3 py-2">Bid</button>
+                            ` : `
+                            <a href="/listing.html?id=${item.id}" class="text-xs font-bold uppercase text-yellow-500">View →</a>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function quickBid(listingId) {
+            const listings = getListings();
+            const listing = listings.find(l => l.id === listingId);
+            if (!listing) return;
+            
+            const user = getUser();
+            const newBid = listing.currentBid + 10;
+            
+            listing.bids = listing.bids || [];
+            listing.bids.push({
+                bidder: user.displayName || 'Anonymous',
+                amount: newBid,
+                time: Date.now()
+            });
+            listing.currentBid = newBid;
+            listing.bidCount = (listing.bidCount || 0) + 1;
+            
+            localStorage.setItem('bz_listings', JSON.stringify(listings));
+            
+            alert('Bid placed! New bid: ' + formatPrice(newBid));
+            renderListings(getListings());
+            renderLiveActivity(getListings());
+        }
+
+        function renderLiveActivity(listings) {
+            const container = document.getElementById('liveActivity');
+            const recentBids = listings
+                .flatMap(l => (l.bids || []).map(b => ({...b, item: l.title})))
+                .sort((a, b) => b.time - a.time)
+                .slice(0, 5);
+            
+            if (recentBids.length === 0) {
+                container.innerHTML = '<div class="text-sm text-slate-500">No recent activity</div>';
+                return;
+            }
+            
+            container.innerHTML = recentBids.map(bid => `
+                <div class="flex gap-3 items-start">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 flex-shrink-0"></div>
+                    <div class="text-xs leading-tight">
+                        <span class="text-white font-bold">${bid.bidder}</span> bid
+                        <span class="gold-text font-bold">${formatPrice(bid.amount)}</span>
+                        <span class="text-slate-500">on ${bid.item}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterByDistrict(district) {
+            currentDistrict = district;
+            let listings = getListings();
+            if (district) listings = listings.filter(l => l.district === district);
+            renderListings(listings);
+            
+            document.querySelectorAll('.district-btn').forEach(btn => {
+                btn.classList.remove('bg-yellow-500', 'text-black');
+                btn.classList.add('bg-slate-800', 'text-slate-400');
+            });
+            event.target.classList.add('bg-yellow-500', 'text-black');
+            event.target.classList.remove('bg-slate-800', 'text-slate-400');
+        }
+
+        function sortListings() {
+            let listings = getListings();
+            if (currentDistrict) listings = listings.filter(l => l.district === currentDistrict);
+            
+            if (currentSort === 'newest') {
+                currentSort = 'ending';
+                listings.sort((a,b) => new Date(a.endTime) - new Date(b.endTime));
+            } else {
+                currentSort = 'newest';
+                listings.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+            }
+            renderListings(listings);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const listings = getListings();
+            updateStats(listings);
+            renderFeatured(listings);
+            renderListings(listings);
+            renderLiveActivity(listings);
+        });
+    </script>
+</body>
+</html>
