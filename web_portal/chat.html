@@ -151,7 +151,7 @@
         };
 
         function getUser() {
-            return JSON.parse(localStorage.getItem('bz_user') || '{}');
+            return JSON.parse(localStorage.getItem('bz_user') || null) || {};
         }
 
         function getAdmins() {
