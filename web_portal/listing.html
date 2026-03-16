@@ -39,9 +39,17 @@
     </div>
   </nav>
 
-  <main class="max-w-6xl mx-auto px-6 py-8">
+    <main class="max-w-6xl mx-auto px-6 py-8">
     <a href="/dashboard.html" class="text-slate-400 hover:text-white mb-6 inline-block">← Back to Marketplace</a>
     
+    <!-- Tabs -->
+    <div class="flex gap-2 mb-6">
+        <button onclick="switchTab('bid')" id="tabBid" class="tab-btn px-4 py-2 rounded-lg bg-yellow-500 text-black font-bold text-sm">💰 Bid</button>
+        <button onclick="switchTab('chat')" id="tabChat" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 text-slate-400 font-bold text-sm">💬 Chat</button>
+    </div>
+    
+    <!-- Bid Tab -->
+    <div id="tabContentBid">
     <div id="listingContent" class="grid lg:grid-cols-2 gap-8">
       <!-- Image -->
       <div class="glass-panel rounded-xl overflow-hidden">
@@ -126,7 +134,23 @@
         </div>
       </div>
     </div>
-  </main>
+    </div>
+    
+    <!-- Chat Tab -->
+    <div id="tabContentChat" class="hidden">
+        <div class="glass-panel rounded-xl p-6">
+            <h3 class="font-syne font-black text-xl mb-4">💬 Chat about this item</h3>
+            <p class="text-slate-400 text-sm mb-4">Discuss this listing with other bidders</p>
+            <div id="listingChat" class="h-64 overflow-y-auto space-y-3 mb-4 bg-black/20 rounded-lg p-4">
+                <!-- Populated by JS -->
+            </div>
+            <form id="listingChatForm" class="flex gap-2">
+                <input id="listingChatInput" type="text" class="flex-1 bg-black/30 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500" placeholder="Say something..." />
+                <button type="submit" class="btn-gold px-4">Send</button>
+            </form>
+        </div>
+    </div>
+    </main>
 
   <script>
     let currentListing = null;
@@ -316,6 +340,79 @@
       msgEl.textContent = 'Auto-bid enabled! We\'ll bid up to ' + formatPrice(cap);
       msgEl.className = 'text-sm text-emerald-400';
     }
+    
+    // Tab switching
+    function switchTab(tab) {
+        document.getElementById('tabContentBid').classList.toggle('hidden', tab !== 'bid');
+        document.getElementById('tabContentChat').classList.toggle('hidden', tab !== 'chat');
+        document.getElementById('tabBid').classList.toggle('bg-yellow-500', tab === 'bid');
+        document.getElementById('tabBid').classList.toggle('text-black', tab === 'bid');
+        document.getElementById('tabBid').classList.toggle('bg-slate-800', tab !== 'bid');
+        document.getElementById('tabBid').classList.toggle('text-slate-400', tab !== 'bid');
+        document.getElementById('tabChat').classList.toggle('bg-yellow-500', tab === 'chat');
+        document.getElementById('tabChat').classList.toggle('text-black', tab === 'chat');
+        document.getElementById('tabChat').classList.toggle('bg-slate-800', tab !== 'chat');
+        document.getElementById('tabChat').classList.toggle('text-slate-400', tab !== 'chat');
+        
+        if (tab === 'chat') renderListingChat();
+    }
+    
+    // Listing-specific chat
+    const LISTING_CHAT_KEY = 'bz_listing_chat';
+    
+    function getListingChatMessages() {
+        const id = getUrlParam('id');
+        const data = localStorage.getItem(LISTING_CHAT_KEY);
+        const all = data ? JSON.parse(data) : {};
+        return all[id] || [];
+    }
+    
+    function saveListingChatMessage(msg) {
+        const id = getUrlParam('id');
+        const data = localStorage.getItem(LISTING_CHAT_KEY);
+        const all = data ? JSON.parse(data) : {};
+        if (!all[id]) all[id] = [];
+        all[id].push(msg);
+        if (all[id].length > 50) all[id] = all[id].slice(-50);
+        localStorage.setItem(LISTING_CHAT_KEY, JSON.stringify(all));
+    }
+    
+    function renderListingChat() {
+        const container = document.getElementById('listingChat');
+        const messages = getListingChatMessages();
+        const user = getUser();
+        
+        if (messages.length === 0) {
+            container.innerHTML = '<div class="text-center text-slate-500 py-8">No messages yet. Start the conversation!</div>';
+            return;
+        }
+        
+        container.innerHTML = messages.map(m => {
+            const isOwn = m.user === (user.displayName || 'Anonymous');
+            return `<div class="${isOwn ? 'text-right' : 'text-left'}">
+                <span class="text-xs ${isOwn ? 'text-yellow-500' : 'text-slate-400'}">${m.user}</span>
+                <div class="inline-block ${isOwn ? 'bg-yellow-500/20' : 'bg-white/10'} px-3 py-2 rounded-lg text-sm">${escapeHtml(m.text)}</div>
+            </div>`;
+        }).join('');
+        container.scrollTop = container.scrollHeight;
+    }
+    
+    // Handle listing chat form
+    document.getElementById('listingChatForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const input = document.getElementById('listingChatInput');
+        const text = input.value.trim();
+        if (text) {
+            const user = getUser();
+            saveListingChatMessage({
+                user: user.displayName || 'Anonymous',
+                text: text,
+                time: Date.now()
+            });
+            input.value = '';
+            renderListingChat();
+        }
+    });
     
     document.addEventListener('DOMContentLoaded', loadListing);
   </script>
