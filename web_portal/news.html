@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Feed - BidWave</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        .font-syne { font-family: 'Syne', sans-serif; }
+        .glass-panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+        .gold-text { color: #f59e0b; }
+        .btn-gold { background: #f59e0b; color: #000; font-weight: 800; padding: 12px 24px; border-radius: 8px; }
+        .btn-gold:hover { filter: brightness(1.1); }
+        .btn-outline { border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #fff; padding: 12px 24px; border-radius: 8px; }
+        .bg-marble { background-color: #09090b; background-image: radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(245, 158, 11, 0.05) 0%, transparent 50%), url("https://www.transparenttextures.com/patterns/carbon-fibre.png"); background-attachment: fixed; }
+        .feed-item { transition: all 0.2s; }
+        .feed-item:hover { background: rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="antialiased bg-marble text-white min-h-screen">
+    <script src="/js/auth.js"></script>
+    <script>
+        if (!isLoggedIn()) {
+            window.location.href = '/login.html';
+        }
+    </script>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-panel py-3">
+        <div class="max-w-6xl mx-auto flex items-center justify-between px-6">
+            <a href="/dashboard.html" class="font-syne text-xl font-black flex items-center gap-2">
+                BID<span class="gold-text">WAVE</span> 🇧🇿
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="/dashboard.html" class="text-sm text-slate-400 hover:text-white">Dashboard</a>
+                <a href="/news.html" class="text-sm font-bold gold-text">News</a>
+                <a href="/chat.html" class="text-sm text-slate-400 hover:text-white">Chat</a>
+                <a href="/profile.html" class="w-8 h-8 rounded-full bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center text-yellow-500 font-bold text-xs user-avatar">BZ</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-6 pt-24 pb-12">
+        <h1 class="font-syne text-3xl font-black mb-2">📰 News Feed</h1>
+        <p class="text-slate-400 mb-8">Stay updated with the latest bidding activity</p>
+        
+        <!-- Tabs -->
+        <div class="flex gap-2 mb-6">
+            <button onclick="switchFeed('all')" id="feedAll" class="feed-tab px-4 py-2 rounded-lg bg-yellow-500 text-black font-bold text-sm">All Activity</button>
+            <button onclick="switchFeed('trending')" id="feedTrending" class="feed-tab px-4 py-2 rounded-lg bg-slate-800 text-slate-400 font-bold text-sm">🔥 Trending</button>
+            <button onclick="switchFeed('mine')" id="feedMine" class="feed-tab px-4 py-2 rounded-lg bg-slate-800 text-slate-400 font-bold text-sm">My Activity</button>
+            <button onclick="switchFeed('new')" id="feedNew" class="feed-tab px-4 py-2 rounded-lg bg-slate-800 text-slate-400 font-bold text-sm">🆕 New Listings</button>
+        </div>
+        
+        <!-- Feed -->
+        <div id="feedContent" class="space-y-4"></div>
+    </main>
+
+    <script>
+        let currentFeed = 'all';
+        
+        function getListings() {
+            return JSON.parse(localStorage.getItem('bz_listings') || '[]');
+        }
+        
+        function getChatMessages() {
+            return JSON.parse(localStorage.getItem('bz_chat_messages') || '{}');
+        }
+        
+        function getUser() {
+            return JSON.parse(localStorage.getItem('bz_user') || '{}');
+        }
+        
+        function formatPrice(price) {
+            return new Intl.NumberFormat('en-BZ', { style: 'currency', currency: 'BZD', maximumFractionDigits: 0 }).format(price);
+        }
+        
+        function formatTime(timestamp) {
+            const diff = Date.now() - timestamp;
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return Math.floor(diff/60000) + 'm ago';
+            if (diff < 86400000) return Math.floor(diff/3600000) + 'h ago';
+            return new Date(timestamp).toLocaleDateString('en-BZ');
+        }
+        
+        function generateFeed() {
+            const listings = getListings();
+            const chatData = getChatMessages();
+            const user = getUser();
+            const feed = [];
+            
+            // Add bids to feed
+            listings.forEach(listing => {
+                if (listing.bids && listing.bids.length > 0) {
+                    listing.bids.forEach(bid => {
+                        feed.push({
+                            type: 'bid',
+                            user: bid.bidder,
+                            item: listing.title,
+                            amount: bid.amount,
+                            listingId: listing.id,
+                            time: bid.time,
+                            isOwn: bid.bidder === (user.displayName || 'Anonymous')
+                        });
+                    });
+                }
+                
+                // Add listing creation
+                feed.push({
+                    type: 'new_listing',
+                    user: listing.seller,
+                    item: listing.title,
+                    price: listing.startingPrice,
+                    listingId: listing.id,
+                    time: listing.createdAt || Date.now(),
+                    isOwn: listing.seller === (user.displayName || 'Anonymous')
+                });
+            });
+            
+            // Add chat activity
+            Object.entries(chatData).forEach(([room, messages]) => {
+                if (messages && messages.length > 0) {
+                    const lastMsg = messages[messages.length - 1];
+                    feed.push({
+                        type: 'chat',
+                        user: lastMsg.user,
+                        message: lastMsg.text,
+                        room: room,
+                        time: lastMsg.time,
+                        isOwn: lastMsg.user === (user.displayName || 'Anonymous')
+                    });
+                }
+            });
+            
+            // Sort by time
+            feed.sort((a, b) => b.time - a.time);
+            
+            return feed;
+        }
+        
+        function renderFeed(feed) {
+            const container = document.getElementById('feedContent');
+            
+            if (feed.length === 0) {
+                container.innerHTML = '<div class="glass-panel p-8 text-center text-slate-500">No activity yet. Start bidding!</div>';
+                return;
+            }
+            
+            container.innerHTML = feed.slice(0, 50).map(item => {
+                if (item.type === 'bid') {
+                    return `
+                        <div class="feed-item glass-panel rounded-xl p-4 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center text-2xl">💰</div>
+                            <div class="flex-1">
+                                <div class="font-bold">
+                                    <span class="${item.isOwn ? 'text-yellow-500' : 'text-white'}">${item.user}</span>
+                                    ${item.isOwn ? '(You)' : ''} placed a bid on
+                                    <span class="gold-text">${item.item}</span>
+                                </div>
+                                <div class="text-sm text-slate-400">${formatTime(item.time)}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xl font-black gold-text">${formatPrice(item.amount)}</div>
+                                <a href="/listing.html?id=${item.listingId}" class="text-xs text-slate-400 hover:text-white">View →</a>
+                            </div>
+                        </div>
+                    `;
+                } else if (item.type === 'new_listing') {
+                    return `
+                        <div class="feed-item glass-panel rounded-xl p-4 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-2xl">🆕</div>
+                            <div class="flex-1">
+                                <div class="font-bold">
+                                    <span class="text-white">${item.user}</span>
+                                    listed a new item
+                                </div>
+                                <div class="text-sm text-slate-400">${item.item} • ${formatPrice(item.price)}</div>
+                                <div class="text-xs text-slate-500">${formatTime(item.time)}</div>
+                            </div>
+                            <a href="/listing.html?id=${item.listingId}" class="btn-gold text-sm px-4 py-2">View</a>
+                        </div>
+                    `;
+                } else if (item.type === 'chat') {
+                    return `
+                        <div class="feed-item glass-panel rounded-xl p-4 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-2xl">💬</div>
+                            <div class="flex-1">
+                                <div class="font-bold">
+                                    <span class="${item.isOwn ? 'text-yellow-500' : 'text-white'}">${item.user}</span>
+                                    ${item.isOwn ? '(You)' : ''} in
+                                    <span class="text-purple-400">#${item.room}</span>
+                                </div>
+                                <div class="text-sm text-slate-400 truncate">${item.message}</div>
+                                <div class="text-xs text-slate-500">${formatTime(item.time)}</div>
+                            </div>
+                            <a href="/chat.html" class="btn-outline text-sm px-4 py-2">Join</a>
+                        </div>
+                    `;
+                }
+                return '';
+            }).join('');
+        }
+        
+        function filterFeed() {
+            const feed = generateFeed();
+            const user = getUser();
+            
+            if (currentFeed === 'mine') {
+                renderFeed(feed.filter(i => i.isOwn));
+            } else if (currentFeed === 'trending') {
+                // Most bids in last 24h
+                const trending = feed.filter(i => i.type === 'bid' && Date.now() - i.time < 86400000);
+                const byItem = {};
+                trending.forEach(i => {
+                    byItem[i.item] = (byItem[i.item] || 0) + 1;
+                });
+                const trendingItems = Object.entries(byItem).sort((a,b) => b[1] - a[1]).slice(0, 10);
+                const trendingFeed = feed.filter(i => trendingItems.some(([name]) => name === i.item));
+                renderFeed(trendingFeed);
+            } else if (currentFeed === 'new') {
+                renderFeed(feed.filter(i => i.type === 'new_listing'));
+            } else {
+                renderFeed(feed);
+            }
+        }
+        
+        function switchFeed(feed) {
+            currentFeed = feed;
+            document.querySelectorAll('.feed-tab').forEach(btn => {
+                btn.classList.remove('bg-yellow-500', 'text-black');
+                btn.classList.add('bg-slate-800', 'text-slate-400');
+            });
+            document.getElementById('feed' + feed.charAt(0).toUpperCase() + feed.slice(1)).classList.add('bg-yellow-500', 'text-black');
+            document.getElementById('feed' + feed.charAt(0).toUpperCase() + feed.slice(1)).classList.remove('bg-slate-800', 'text-slate-400');
+            filterFeed();
+        }
+        
+        document.addEventListener('DOMContentLoaded', filterFeed);
+        
+        // Refresh every 10 seconds
+        setInterval(filterFeed, 10000);
+    </script>
+</body>
+</html>

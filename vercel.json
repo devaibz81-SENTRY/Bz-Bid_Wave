@@ -25,6 +25,8 @@
     { "src": "/listing.html", "dest": "/web_portal/listing.html" },
     { "src": "/chat", "dest": "/web_portal/chat.html" },
     { "src": "/chat.html", "dest": "/web_portal/chat.html" },
+    { "src": "/news", "dest": "/web_portal/news.html" },
+    { "src": "/news.html", "dest": "/web_portal/news.html" },
     { "src": "/js/(.*)", "dest": "/web_portal/js/$1" },
     { "src": "/public/(.*)", "dest": "/web_portal/public/$1" },
     { "src": "/(.*)", "dest": "/web_portal/$1" }
