@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BidWave - Dashboard</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Theme & Components -->
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/components.css">
+    
+    <script src="/js/auth.js"></script>
+</head>
+<body class="bg-primary">
+    <script>
+        if (!isLoggedIn()) {
+            window.location.href = '/login.html';
+        }
+    </script>
+
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="header-title">Discover</h1>
+                    <p class="header-subtitle">Premium auctions in Belize</p>
+                </div>
+                <div class="header-right">
+                    <button class="nav-icon-btn" onclick="window.location.href='/chat.html'">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </button>
+                    <div class="user-avatar" onclick="window.location.href='/profile.html'">
+                        <span>U</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" placeholder="Search auctions..." class="search-input">
+            </div>
+            
+            <!-- Quick Filters -->
+            <div class="quick-filters">
+                <button class="filter-chip active">All</button>
+                <button class="filter-chip">Cars</button>
+                <button class="filter-chip">Watches</button>
+                <button class="filter-chip">Art</button>
+                <button class="filter-chip">Property</button>
+            </div>
+        </header>
+
+        <!-- Featured Auction -->
+        <section class="featured-section">
+            <div class="featured-card" onclick="window.location.href='/listing-v2.html?id=1'">
+                <div class="featured-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=600&q=80" alt="Featured" class="featured-img">
+                    <div class="featured-overlay"></div>
+                    <div class="featured-badges">
+                        <span class="badge badge-live">
+                            <span class="pulse-dot"></span>
+                            Live
+                        </span>
+                    </div>
+                </div>
+                <div class="featured-content">
+                    <div class="featured-info">
+                        <h3 class="featured-title">Omega Speedmaster Pro</h3>
+                        <p class="featured-bid">
+                            <span class="text-accent font-bold text-xl">$4,250</span>
+                            <span class="text-muted text-sm"> • 12 bids</span>
+                        </p>
+                    </div>
+                    <button class="btn-bid btn-bid-sm">Bid Now</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Auctions Grid -->
+        <section class="auctions-section">
+            <div class="section-header-row">
+                <h2 class="section-title">Live Auctions</h2>
+                <button class="btn-ghost text-sm">See All</button>
+            </div>
+            
+            <div class="auctions-grid" id="auctionsGrid">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Categories -->
+        <section class="categories-section">
+            <div class="section-header-row">
+                <h2 class="section-title">Categories</h2>
+            </div>
+            
+            <div class="categories-scroll">
+                <div class="category-card">
+                    <div class="category-icon">🚗</div>
+                    <span class="category-name">Vehicles</span>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">⌚</div>
+                    <span class="category-name">Watches</span>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">🏠</div>
+                    <span class="category-name">Property</span>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">🎨</div>
+                    <span class="category-name">Art</span>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">📱</div>
+                    <span class="category-name">Tech</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="/dashboard-v2.html" class="nav-item active">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                <span>Home</span>
+            </a>
+            <a href="/news.html" class="nav-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/>
+                </svg>
+                <span>Activity</span>
+            </a>
+            <a href="/list-item.html" class="nav-item nav-item-add">
+                <div class="add-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </div>
+            </a>
+            <a href="/chat.html" class="nav-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span>Chat</span>
+            </a>
+            <a href="/profile.html" class="nav-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Profile</span>
+            </a>
+        </nav>
+
+    </div>
+
+    <script>
+        function getListings() {
+            const listings = localStorage.getItem('bz_listings');
+            if (listings) return JSON.parse(listings);
+            
+            // Sample data
+            const samples = [
+                { id: '1', title: '2024 Toyota Hilux', category: 'Vehicles', startingPrice: 45000, currentBid: 48500, imageUrl: 'https://images.unsplash.com/photo-1626668893632-6f3a4466d22f?auto=format&fit=crop&w=400&q=80', endTime: new Date(Date.now() + 2*24*60*60*1000).toISOString(), saleType: 'auction', bidCount: 12 },
+                { id: '2', title: 'Luxury Watch', category: 'Watches', startingPrice: 3500, currentBid: 4350, imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=400&q=80', endTime: new Date(Date.now() + 5*24*60*60*1000).toISOString(), saleType: 'auction', bidCount: 8 },
+                { id: '3', title: 'Beachfront Property', category: 'Property', startingPrice: 250000, currentBid: 275000, imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=400&q=80', endTime: new Date(Date.now() + 7*24*60*60*1000).toISOString(), saleType: 'auction', bidCount: 15 },
+                { id: '4', title: 'MacBook Pro M3', category: 'Tech', startingPrice: 3500, currentBid: 3500, imageUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=400&q=80', endTime: new Date(Date.now() + 3*24*60*60*1000).toISOString(), saleType: 'big_sale', bidCount: 0 },
+                { id: '5', title: 'ATV for Trade', category: 'Trade', startingPrice: 0, currentBid: 0, imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80', endTime: new Date(Date.now() + 14*24*60*60*1000).toISOString(), saleType: 'trade', bidCount: 0 },
+                { id: '6', title: 'HP Printer', category: 'Tech', startingPrice: 800, currentBid: 950, imageUrl: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?auto=format&fit=crop&w=400&q=80', endTime: new Date(Date.now() + 1*24*60*60*1000).toISOString(), saleType: 'auction', bidCount: 4 }
+            ];
+            localStorage.setItem('bz_listings', JSON.stringify(samples));
+            return samples;
+        }
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('en-BZ', { style: 'currency', currency: 'BZD', maximumFractionDigits: 0 }).format(price);
+        }
+
+        function getTimeLeft(endTime) {
+            const diff = new Date(endTime) - new Date();
+            if (diff <= 0) return 'Ended';
+            const days = Math.floor(diff / (1000*60*60*24));
+            const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+            if (days > 0) return days + 'd ' + hours + 'h';
+            const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
+            return hours + 'h ' + mins + 'm';
+        }
+
+        function quickBid(id) {
+            const listings = getListings();
+            const listing = listings.find(l => l.id === id);
+            if (!listing) return;
+            
+            const user = JSON.parse(localStorage.getItem('bz_user') || '{}');
+            const newBid = listing.currentBid + 100;
+            
+            listing.bids = listing.bids || [];
+            listing.bids.push({
+                bidder: user.displayName || 'Anonymous',
+                amount: newBid,
+                time: Date.now()
+            });
+            listing.currentBid = newBid;
+            listing.bidCount = (listing.bidCount || 0) + 1;
+            
+            localStorage.setItem('bz_listings', JSON.stringify(listings));
+            alert('Bid placed! New bid: ' + formatPrice(newBid));
+            renderAuctions();
+        }
+
+        function renderAuctions() {
+            const grid = document.getElementById('auctionsGrid');
+            const listings = getListings().filter(l => l.saleType === 'auction');
+            
+            grid.innerHTML = listings.map(item => `
+                <div class="card-listing" onclick="window.location.href='/listing-v2.html?id=${item.id}'">
+                    <div class="listing-img-wrapper img-square">
+                        <img src="${item.imageUrl}" alt="${item.title}" class="img-square">
+                        <div class="listing-badges">
+                            <span class="badge badge-live">Live</span>
+                        </div>
+                        <div class="listing-time">${getTimeLeft(item.endTime)}</div>
+                    </div>
+                    <div class="listing-content">
+                        <p class="listing-category">${item.category}</p>
+                        <h3 class="listing-title">${item.title}</h3>
+                        <div class="listing-footer">
+                            <div class="listing-bid">
+                                <span class="bid-label">Current</span>
+                                <span class="bid-value">${formatPrice(item.currentBid)}</span>
+                            </div>
+                            ${item.saleType === 'auction' ? `<button onclick="event.stopPropagation(); quickBid('${item.id}')" class="btn-bid btn-bid-sm">Bid</button>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter chips
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', renderAuctions);
+    </script>
+
+    <style>
+        /* App Container */
+        .app-container {
+            min-height: 100vh;
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .dashboard-header {
+            padding: 16px 20px;
+            padding-top: 60px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .header-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .header-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin: 4px 0 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-icon-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: var(--bg-surface);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .nav-icon-btn:hover {
+            background: var(--bg-surface-highlight);
+        }
+
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            background: var(--bg-surface);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+        }
+
+        /* Quick Filters */
+        .quick-filters {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            background: var(--bg-surface);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-chip:hover {
+            background: var(--bg-surface-highlight);
+        }
+
+        .filter-chip.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+        }
+
+        /* Featured Section */
+        .featured-section {
+            padding: 0 20px;
+            margin-bottom: 24px;
+        }
+
+        .featured-card {
+            background: var(--bg-surface);
+            border-radius: 24px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .featured-img-wrapper {
+            position: relative;
+            height: 200px;
+        }
+
+        .featured-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .featured-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, var(--bg-surface), transparent 50%);
+        }
+
+        .featured-badges {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+        }
+
+        .featured-content {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .featured-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0 0 4px;
+        }
+
+        .featured-bid {
+            margin: 0;
+        }
+
+        /* Auctions Section */
+        .auctions-section {
+            padding: 0 20px;
+            margin-bottom: 24px;
+        }
+
+        .section-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* Auctions Grid */
+        .auctions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .listing-img-wrapper {
+            position: relative;
+            border-radius: 16px 16px 0 0;
+            overflow: hidden;
+        }
+
+        .listing-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .listing-badges {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+        }
+
+        .listing-time {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            padding: 4px 10px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .listing-content {
+            padding: 12px;
+        }
+
+        .listing-category {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 0 0 4px;
+        }
+
+        .listing-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 0 0 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .listing-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .listing-bid .bid-label {
+            display: block;
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .listing-bid .bid-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* Categories */
+        .categories-section {
+            padding: 0 20px;
+            margin-bottom: 24px;
+        }
+
+        .categories-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .category-card {
+            min-width: 80px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--bg-surface);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+        }
+
+        .category-card:hover .category-icon {
+            background: var(--bg-surface-highlight);
+            transform: scale(1.05);
+        }
+
+        .category-name {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 500px;
+            margin: 0 auto;
+            height: 70px;
+            background: rgba(11, 15, 25, 0.95);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 8px;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.65rem;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--accent);
+            background: rgba(234, 179, 8, 0.1);
+        }
+
+        .nav-item-add {
+            position: relative;
+            top: -20px;
+        }
+
+        .add-btn {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(234, 179, 8, 0.4);
+        }
+
+        .add-btn svg {
+            color: #000;
+        }
+    </style>
+</body>
+</html>

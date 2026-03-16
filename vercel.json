@@ -27,6 +27,11 @@
     { "src": "/chat.html", "dest": "/web_portal/chat.html" },
     { "src": "/news", "dest": "/web_portal/news.html" },
     { "src": "/news.html", "dest": "/web_portal/news.html" },
+    { "src": "/dashboard-v2", "dest": "/web_portal/dashboard-v2.html" },
+    { "src": "/dashboard-v2.html", "dest": "/web_portal/dashboard-v2.html" },
+    { "src": "/listing-v2", "dest": "/web_portal/listing-v2.html" },
+    { "src": "/listing-v2.html", "dest": "/web_portal/listing-v2.html" },
+    { "src": "/css/(.*)", "dest": "/web_portal/css/$1" },
     { "src": "/js/(.*)", "dest": "/web_portal/js/$1" },
     { "src": "/public/(.*)", "dest": "/web_portal/public/$1" },
     { "src": "/(.*)", "dest": "/web_portal/$1" }

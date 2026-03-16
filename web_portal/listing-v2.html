@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BidWave - Premium Auctions</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Theme & Components -->
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/components.css">
+    
+    <script src="/js/auth.js"></script>
+</head>
+<body class="bg-primary">
+    <script>
+        if (!isLoggedIn()) {
+            window.location.href = '/login.html';
+        }
+    </script>
+
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Hero Image Section -->
+        <div class="hero-section">
+            <img id="mainImage" src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=800&q=80" alt="Item" class="hero-img">
+            <div class="hero-overlay"></div>
+            
+            <!-- Top Nav (Floating) -->
+            <div class="hero-nav">
+                <button class="nav-icon-btn" onclick="window.location.href='/dashboard-v2.html'">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <button class="nav-icon-btn" onclick="toggleFavorite()">
+                    <svg id="favIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Live Badge -->
+            <div class="hero-badges">
+                <div class="badge badge-live">
+                    <span class="pulse-dot"></span>
+                    Live Auction
+                </div>
+                <div class="badge badge-views">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    <span id="viewCount">342</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Sheet -->
+        <div class="content-sheet">
+            <!-- Drag Handle -->
+            <div class="drag-handle"></div>
+            
+            <!-- Title & Info -->
+            <div class="section-header">
+                <p class="text-accent text-xs font-semibold tracking-widest uppercase">Lot #42</p>
+                <h1 class="title-main" id="itemTitle">Omega Speedmaster Pro</h1>
+                <p class="text-secondary text-sm" id="itemDescription">Vintage 1969 "Moonwatch" Chronograph. Excellent condition with original box, papers, and stepped dial.</p>
+            </div>
+
+            <!-- Thumbnails -->
+            <div class="thumbnails" id="thumbnailContainer">
+                <div class="thumbnail active" onclick="selectImage(0)">
+                    <img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=200&q=80" alt="">
+                </div>
+                <div class="thumbnail" onclick="selectImage(1)">
+                    <img src="https://images.unsplash.com/photo-1548171915-e75a401221b7?auto=format&fit=crop&w=200&q=80" alt="">
+                </div>
+                <div class="thumbnail" onclick="selectImage(2)">
+                    <img src="https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=200&q=80" alt="">
+                </div>
+            </div>
+
+            <!-- Bidding Card -->
+            <div class="card-bid">
+                <div class="bid-card-content">
+                    <div class="bid-info">
+                        <p class="bid-label">Current Bid</p>
+                        <div class="bid-amount">
+                            <span class="currency">$</span>
+                            <span id="currentBidDisplay">4,250</span>
+                        </div>
+                    </div>
+                    <div class="countdown-wrapper">
+                        <p class="bid-label">Ends In</p>
+                        <div class="countdown">
+                            <svg class="countdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            <span id="countdownTimer">02:15:45</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bidders -->
+                <div class="bidders-row">
+                    <div class="avatar-stack">
+                        <img class="avatar" src="https://i.pravatar.cc/100?img=33" alt="Bidder">
+                        <img class="avatar" src="https://i.pravatar.cc/100?img=12" alt="Bidder">
+                        <img class="avatar" src="https://i.pravatar.cc/100?img=5" alt="Bidder">
+                        <div class="avatar-more">+12</div>
+                    </div>
+                    <button class="btn-ghost">
+                        History
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Details Section -->
+            <div class="details-section">
+                <h3 class="section-title">Details</h3>
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <div class="detail-content">
+                        <p class="detail-title">Verified Authentic</p>
+                        <p class="detail-subtitle">Inspected by specialists</p>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        </svg>
+                    </div>
+                    <div class="detail-content">
+                        <p class="detail-title">Original Packaging</p>
+                        <p class="detail-subtitle">Includes box and manuals</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spacer for bottom bar -->
+            <div class="bottom-spacer"></div>
+        </div>
+
+        <!-- Floating Bottom Bar -->
+        <div class="bottom-bar">
+            <div class="bid-input-row">
+                <div class="input-with-icon">
+                    <span class="currency-symbol">$</span>
+                    <input type="number" id="bidInput" class="input-bid" placeholder="Amount" value="4350">
+                </div>
+                <button class="btn-quick-amount" onclick="addAmount(100)">+$100</button>
+            </div>
+            <button class="btn-bid btn-bid-glow w-full" onclick="placeBid()">
+                Place Bid
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast">
+            <svg class="toast-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span id="toastMessage">Bid placed!</span>
+        </div>
+
+    </div>
+
+    <script>
+        // State
+        let currentBid = 4250;
+        let isFavorite = false;
+        let selectedImageIndex = 0;
+        
+        const images = [
+            "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1548171915-e75a401221b7?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=800&q=80"
+        ];
+
+        // Load listing data
+        function loadListing() {
+            const id = new URLSearchParams(window.location.search).get('id');
+            const listings = JSON.parse(localStorage.getItem('bz_listings') || '[]');
+            const listing = listings.find(l => l.id === id);
+            
+            if (listing) {
+                document.getElementById('itemTitle').textContent = listing.title;
+                document.getElementById('itemDescription').textContent = listing.description || 'No description provided.';
+                document.getElementById('currentBidDisplay').textContent = listing.currentBid.toLocaleString();
+                currentBid = listing.currentBid;
+                document.getElementById('bidInput').value = currentBid + 100;
+                
+                if (listing.imageUrl) {
+                    images[0] = listing.imageUrl;
+                    document.getElementById('mainImage').src = listing.imageUrl;
+                }
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadListing();
+            startCountdown();
+        });
+
+        function toggleFavorite() {
+            isFavorite = !isFavorite;
+            const icon = document.getElementById('favIcon');
+            if (isFavorite) {
+                icon.setAttribute('fill', 'currentColor');
+                icon.classList.add('text-error');
+            } else {
+                icon.setAttribute('fill', 'none');
+                icon.classList.remove('text-error');
+            }
+        }
+
+        function selectImage(index) {
+            selectedImageIndex = index;
+            document.getElementById('mainImage').style.opacity = '0';
+            
+            setTimeout(() => {
+                document.getElementById('mainImage').src = images[index];
+                document.getElementById('mainImage').style.opacity = '1';
+            }, 200);
+            
+            document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
+                thumb.classList.toggle('active', i === index);
+            });
+        }
+
+        function addAmount(amount) {
+            const input = document.getElementById('bidInput');
+            let currentValue = parseInt(input.value) || currentBid;
+            if (currentValue <= currentBid) currentValue = currentBid;
+            input.value = currentValue + amount;
+        }
+
+        function placeBid() {
+            const input = document.getElementById('bidInput');
+            const bidAmount = parseInt(input.value);
+
+            if (!bidAmount || bidAmount <= currentBid) {
+                showToast('Bid must exceed $' + currentBid.toLocaleString(), true);
+                return;
+            }
+
+            // Success
+            currentBid = bidAmount;
+            document.getElementById('currentBidDisplay').textContent = currentBid.toLocaleString();
+            input.value = currentBid + 100;
+            
+            showToast('Bid of $' + currentBid.toLocaleString() + ' placed!', false);
+        }
+
+        function showToast(message, isError) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = toast.querySelector('.toast-icon');
+            
+            toastMessage.textContent = message;
+            toast.classList.toggle('toast-success', !isError);
+            toast.classList.toggle('toast-error', isError);
+            toastIcon.innerHTML = isError 
+                ? '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'
+                : '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>';
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function startCountdown() {
+            let timeInSeconds = (2 * 3600) + (15 * 60) + 45;
+            setInterval(() => {
+                if (timeInSeconds <= 0) return;
+                timeInSeconds--;
+                const h = Math.floor(timeInSeconds / 3600);
+                const m = Math.floor((timeInSeconds % 3600) / 60);
+                const s = timeInSeconds % 60;
+                document.getElementById('countdownTimer').textContent = 
+                    h.toString().padStart(2, '0') + ':' + 
+                    m.toString().padStart(2, '0') + ':' + 
+                    s.toString().padStart(2, '0');
+            }, 1000);
+        }
+    </script>
+
+    <style>
+        /* App Container */
+        .app-container {
+            min-height: 100vh;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            background: var(--bg-primary);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            height: 55vh;
+            max-height: 450px;
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s ease;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                transparent 0%,
+                rgba(11, 15, 25, 0.2) 50%,
+                var(--bg-primary) 100%
+            );
+        }
+
+        /* Hero Nav */
+        .hero-nav {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .nav-icon-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            background: rgba(11, 15, 25, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .nav-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Hero Badges */
+        .hero-badges {
+            position: absolute;
+            bottom: 20px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .badge-views {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: white;
+        }
+
+        /* Content Sheet */
+        .content-sheet {
+            position: relative;
+            background: var(--bg-primary);
+            border-radius: 32px 32px 0 0;
+            margin-top: -32px;
+            padding: 24px 20px 100px;
+            z-index: 20;
+        }
+
+        .drag-handle {
+            width: 40px;
+            height: 5px;
+            background: var(--bg-surface-highlight);
+            border-radius: 10px;
+            margin: 0 auto 24px;
+        }
+
+        .section-header {
+            margin-bottom: 24px;
+        }
+
+        .title-main {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin: 8px 0 12px;
+            line-height: 1.2;
+        }
+
+        /* Thumbnails */
+        .thumbnails {
+            margin-bottom: 24px;
+        }
+
+        /* Bid Card */
+        .bid-card-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .bid-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .bid-amount {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .bid-amount .currency {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-right: 2px;
+            margin-top: 4px;
+        }
+
+        .bid-amount span:last-child {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .countdown-wrapper {
+            text-align: right;
+        }
+
+        .bidders-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Details */
+        .details-section {
+            margin-top: 32px;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .detail-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-surface);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .detail-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--bg-surface-highlight);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+        }
+
+        .detail-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .detail-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .bottom-spacer {
+            height: 20px;
+        }
+
+        /* Text Error */
+        .text-error {
+            color: var(--error);
+        }
+
+        /* Toast Show State */
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</body>
+</html>
