@@ -1,11 +1,24 @@
 {
   "version": 2,
   "builds": [
-    { "src": "web_portal/index.html", "use": "@vercel/static" },
-    { "src": "web_portal/*.html", "use": "@vercel/static" }
+    { "src": "web_portal/**", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/", "dest": "/web_portal/index.html" },
+    { "src": "/login", "dest": "/web_portal/login.html" },
+    { "src": "/login.html", "dest": "/web_portal/login.html" },
+    { "src": "/onboarding", "dest": "/web_portal/onboarding.html" },
+    { "src": "/onboarding.html", "dest": "/web_portal/onboarding.html" },
+    { "src": "/dashboard", "dest": "/web_portal/dashboard.html" },
+    { "src": "/dashboard.html", "dest": "/web_portal/dashboard.html" },
+    { "src": "/profile", "dest": "/web_portal/profile.html" },
+    { "src": "/profile.html", "dest": "/web_portal/profile.html" },
+    { "src": "/download", "dest": "/web_portal/download.html" },
+    { "src": "/download.html", "dest": "/web_portal/download.html" },
+    { "src": "/privacy", "dest": "/web_portal/privacy.html" },
+    { "src": "/privacy.html", "dest": "/web_portal/privacy.html" },
+    { "src": "/tos", "dest": "/web_portal/tos.html" },
+    { "src": "/tos.html", "dest": "/web_portal/tos.html" },
     { "src": "/(.*)", "dest": "/web_portal/$1" }
   ]
 }
