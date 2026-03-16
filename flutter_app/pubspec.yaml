@@ -28,11 +28,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  fonts:
-    - family: Syne
-      fonts:
-        - asset: assets/fonts/Syne-Bold.ttf
-          weight: 700
-    - family: SpaceGrotesk
-      fonts:
-        - asset: assets/fonts/SpaceGrotesk-Regular.ttf
