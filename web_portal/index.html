@@ -31,28 +31,25 @@
             background: rgba(255, 255, 255, 0.04);
             border-color: rgba(255, 255, 255, 0.1);
         }
-        /* Gold text gradient */
+        /* Flat gold color for minimal UI */
         .gold-text {
-            background: linear-gradient(135deg, #fde047 0%, #f59e0b 50%, #b45309 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #f59e0b;
         }
         /* Button styles */
         .btn-gold {
-            background: linear-gradient(135deg, #fde047 0%, #f59e0b 100%);
+            background: #f59e0b;
             color: #000;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             padding: 12px 24px;
             border-radius: 12px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+            transition: all 0.2s ease;
+            box-shadow: none;
         }
         .btn-gold:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.5);
-            filter: brightness(1.1);
+            transform: translateY(-1px);
+            filter: brightness(1.05);
         }
         .btn-outline {
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -87,7 +84,7 @@
     <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 glass-panel py-3">
         <div class="max-w-7xl mx-auto flex items-center justify-between px-6">
             <a href="/" class="font-syne text-2xl font-black flex items-center gap-2">
-              <img src="public/logo.svg" alt="BZ BIDWAVE" style="height:28px; width:auto; margin-right:8px;"/>
+              <img src="/public/logo.svg" alt="BZ BIDWAVE" style="height:28px; width:auto; margin-right:8px;"/>
               BID<span class="gold-text">WAVE</span> 🇧🇿
             </a>
             
