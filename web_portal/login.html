@@ -56,7 +56,7 @@
       // Simple local auth for MVP
       const stored = JSON.parse(localStorage.getItem('bz_user') || '{}');
       
-      if (stored.displayName === username && stored.pin === pin) {
+      if (stored && stored.displayName === username && stored.pin === pin) {
         localStorage.setItem('bz_session', JSON.stringify({ displayName: username, loggedIn: true }));
         location.href = '/dashboard.html';
       } else {

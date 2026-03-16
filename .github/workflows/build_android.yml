@@ -33,10 +33,13 @@ jobs:
         with:
           flutter-version: '3.41.4'
           channel: 'stable'
-          cache: true
 
-      - name: Flutter Clean
+      - name: Clear Flutter Cache
         run: flutter clean
+        working-directory: ./flutter_app
+
+      - name: Clear Gradle Cache
+        run: rm -rf ~/.gradle/caches
         working-directory: ./flutter_app
 
       # 4. Install dependencies

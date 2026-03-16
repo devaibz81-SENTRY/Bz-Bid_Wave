@@ -20,7 +20,7 @@
     }
     .left, .right { padding: 24px; border-radius: 20px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); }
     .left { display: flex; flex-direction: column; justify-content: space-between; }
-    .gold { background: linear-gradient(135deg, #fde047 0%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .gold { color: #f59e0b; }
     h1 { font-family: 'Syne', sans-serif; font-size: 40px; line-height: 1.1; margin: 0 0 12px; font-weight: 900; }
     p { margin: 0 0 16px; color: #d1d5db; }
     ul { padding-left: 20px; margin: 0; }
@@ -79,9 +79,10 @@
         const p2 = (pin2.value||'').trim();
         if(!dn){ showMsg('Display name is required', true); return; }
         if(!/^\d{4}$/.test(p1) || p1 !== p2){ showMsg('PIN must be 4 digits and must match', true); return; }
-        const user = { displayName: dn, pin: p1 };
-        localStorage.setItem('bz_bidwave_user', JSON.stringify(user));
-        showMsg('Account created. You can sign in later or continue to the dashboard.', false);
+        const user = { displayName: dn, pin: p1, createdAt: Date.now() };
+        localStorage.setItem('bz_user', JSON.stringify(user));
+        showMsg('Account created! Redirecting to login...', false);
+        setTimeout(() => location.href = '/login.html', 1500);
       });
       function showMsg(text, isError){
         msg.style.display = 'block';
