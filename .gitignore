@@ -18,6 +18,16 @@ flutter_app/android/app/build/
 web_portal/.vercel/
 web_portal/node_modules/
 
+# Legacy v1 HTML files (kept locally only)
+web_portal/dashboard.html
+web_portal/listing.html
+web_portal/list-item.html
+web_portal/news.html
+web_portal/profile.html
+web_portal/chat.html
+web_portal/login.html
+web_portal/onboarding.html
+
 # OS/IDEs
 .vscode/
 .idea/

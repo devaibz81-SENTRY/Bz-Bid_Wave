@@ -66,7 +66,9 @@ function updateNav(userAvatar = null) {
     if (isAuth) {
       const user = getUser();
       authContainer.innerHTML = `
-        <a href="/dashboard.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Dashboard</a>
+        <a href="/dashboard-v2.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Dashboard</a>
+        <a href="/news.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">News</a>
+        <a href="/chat.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Chat</a>
         <a href="/profile.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Profile</a>
         <button onclick="logout()" class="text-sm font-medium text-red-400 hover:text-red-300 transition-colors">Logout</button>
       `;
@@ -81,7 +83,7 @@ function updateNav(userAvatar = null) {
   // Update logo link to go to dashboard if logged in
   const logoLink = nav.querySelector('a[href="/"]');
   if (logoLink && isAuth) {
-    logoLink.href = '/dashboard.html';
+    logoLink.href = '/dashboard-v2.html';
   }
 }
 

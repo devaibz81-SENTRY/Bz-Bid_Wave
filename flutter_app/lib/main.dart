@@ -56,7 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<void> _fetchListings() async {
     try {
-      final List<dynamic> listings = await ConvexClient.instance.query('listings');
+      final List<dynamic> listings = await ConvexClient.instance.query('listings', {});
       if (mounted) {
         setState(() {
           _listings = listings;
